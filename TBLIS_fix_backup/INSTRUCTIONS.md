@@ -14,21 +14,31 @@ This kit restores the artifact's **env-driven** code generation: it reads what t
 include/link from environment variables (set by `scripts/mosaic_env_var.sh`),
 which are TBLIS-only. Result: kernels need only TBLIS.
 
+Compatible with **TBLIS 2.0** (see the TBLIS-2.0 notes below).
+
 ## What's in this kit
 | File | Replaces | Change |
 |---|---|---|
-| `module.cpp`       | `mosaic/src/codegen/module.cpp`                 | link cmd → reads `INCLUDE_PATH`/`LIB_PATH`/`DYNAMIC_LIB_FILES` (was: hardcoded `-lopenblas -lcudart -lmkl_*`) |
+| `module.cpp`       | `mosaic/src/codegen/module.cpp`                 | (1) link cmd → reads `INCLUDE_PATH`/`LIB_PATH`/`DYNAMIC_LIB_FILES` (was: hardcoded `-lopenblas -lcudart -lmkl_*`); (2) compile flags add `-D_GNU_SOURCE` (TBLIS 2.0 headers need it — see below) |
 | `codegen_c.cpp`    | `mosaic/src/codegen/codegen_c.cpp`              | kernel `#include`s → `getenv("INCLUDE_HEADERS")` (was: hardcoded gsl/mkl/cuda includes) |
 | `tblis-wrappers.h` | `tensor_algebra_systems_lib/tblis-wrappers.h`   | comments out one dead fn (`tblis_vector_dot_transfer`) that uses a `tblis_vector` type newer TBLIS lacks |
+| (edited in place)  | `scripts/mosaic_env_var.sh`                     | `apply.sh` rewrites `DYNAMIC_LIB_FILES` from `-l:libtblis.so.0.0.0` → `-l:libtblis.so` (TBLIS 2.0 install name) |
+
+## TBLIS 2.0 changes (why the extra two tweaks)
+- **Lib name:** TBLIS 2.0 installs an *unversioned* `libtblis.so` (older builds had
+  `libtblis.so.0.0.0`). So `apply.sh` rewrites `DYNAMIC_LIB_FILES` to `-l:libtblis.so`.
+- **`-D_GNU_SOURCE`:** TBLIS 2.0 headers pull in TCI, which uses `pthread_spinlock_t`
+  — a GNU extension that strict `-std=c99` hides (`unknown type name 'pthread_spinlock_t'`).
+  Adding `-D_GNU_SOURCE` exposes it while keeping the C99 standard unchanged.
+- `libtblis.so` self-resolves its `libgomp` (OpenMP) dependency — no extra link flags.
 
 ## Prerequisites
 - The Mosaic **mosaic-artifact** layout (a dir containing both `mosaic/` and
   `tensor_algebra_systems_lib/`), already built once (so `mosaic/build/` exists).
 - **TBLIS installed** at `tensor_algebra_systems_lib/tblis/{include,lib}`
-  (with `libtblis.so.0.0.0`).
+  (TBLIS 2.0 → `libtblis.so`; older → `libtblis.so.0.0.0`).
 - `scripts/mosaic_env_var.sh` present (sets `PATH_TO_MOSAIC_ARTIFACT`,
-  `INCLUDE_PATH`, `LIB_PATH`, `DYNAMIC_LIB_FILES=-l:libtblis.so.0.0.0`,
-  `INCLUDE_HEADERS`).
+  `INCLUDE_PATH`, `LIB_PATH`, `DYNAMIC_LIB_FILES`, `INCLUDE_HEADERS`).
 
 ## Apply it in a DOCKER CONTAINER (the main use case)
 From the host (replace `<container>` with your container id/name; `/mosaic-artifact`

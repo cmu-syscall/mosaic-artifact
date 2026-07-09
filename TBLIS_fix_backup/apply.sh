@@ -24,28 +24,35 @@ KIT="$(cd "$(dirname "$0")" && pwd)"
 MOD="$ROOT/mosaic/src/codegen/module.cpp"
 CG="$ROOT/mosaic/src/codegen/codegen_c.cpp"
 WR="$ROOT/tensor_algebra_systems_lib/tblis-wrappers.h"
+ENVSH="$ROOT/scripts/mosaic_env_var.sh"
 BK="$ROOT/TBLIS_fix_ORIGINALS"
 
-for f in "$MOD" "$CG" "$WR"; do
+for f in "$MOD" "$CG" "$WR" "$ENVSH"; do
   [ -f "$f" ] || { echo "ERROR: expected file not found: $f"; echo "Is '$ROOT' the mosaic-artifact root?"; exit 1; }
 done
 
-echo "[1/4] Backing up originals -> $BK"
+echo "[1/5] Backing up originals -> $BK"
 mkdir -p "$BK"
-cp -v "$MOD" "$BK/module.cpp.orig"
-cp -v "$CG"  "$BK/codegen_c.cpp.orig"
-cp -v "$WR"  "$BK/tblis-wrappers.h.orig"
+cp -v "$MOD"   "$BK/module.cpp.orig"
+cp -v "$CG"    "$BK/codegen_c.cpp.orig"
+cp -v "$WR"    "$BK/tblis-wrappers.h.orig"
+cp -v "$ENVSH" "$BK/mosaic_env_var.sh.orig"
 
-echo "[2/4] Installing fixed files (surgical replace)"
+echo "[2/5] Installing fixed files (surgical replace)"
 cp -v "$KIT/module.cpp"        "$MOD"
 cp -v "$KIT/codegen_c.cpp"     "$CG"
 cp -v "$KIT/tblis-wrappers.h"  "$WR"
 
-echo "[3/4] Forcing recompile (IMPORTANT: copy can preserve old mtimes, which"
+echo "[3/5] Fixing the TBLIS lib name for TBLIS 2.0 (unversioned libtblis.so)"
+echo "      old installs used libtblis.so.0.0.0; TBLIS 2.0 installs libtblis.so"
+sed -i 's/libtblis\.so\.0\.0\.0/libtblis.so/g' "$ENVSH"
+grep DYNAMIC_LIB_FILES "$ENVSH" | sed 's/^/      now: /'
+
+echo "[4/5] Forcing recompile (IMPORTANT: copy can preserve old mtimes, which"
 echo "      makes 'make' skip the changed files — touch bumps them to 'now')"
 touch "$MOD" "$CG"
 
-echo "[4/4] Rebuilding taco + taco-bench"
+echo "[5/5] Rebuilding taco + taco-bench"
 cd "$ROOT/mosaic/build"
 export CMAKE_POLICY_VERSION_MINIMUM=3.5
 make -j"$(nproc)" taco-bench

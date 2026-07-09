@@ -9,6 +9,7 @@ BK="$ROOT/TBLIS_fix_ORIGINALS"
 cp -v "$BK/module.cpp.orig"        "$ROOT/mosaic/src/codegen/module.cpp"
 cp -v "$BK/codegen_c.cpp.orig"     "$ROOT/mosaic/src/codegen/codegen_c.cpp"
 cp -v "$BK/tblis-wrappers.h.orig"  "$ROOT/tensor_algebra_systems_lib/tblis-wrappers.h"
+[ -f "$BK/mosaic_env_var.sh.orig" ] && cp -v "$BK/mosaic_env_var.sh.orig" "$ROOT/scripts/mosaic_env_var.sh"
 touch "$ROOT/mosaic/src/codegen/module.cpp" "$ROOT/mosaic/src/codegen/codegen_c.cpp"
 
 cd "$ROOT/mosaic/build"
