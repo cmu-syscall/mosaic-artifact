@@ -3,5 +3,5 @@
 	url = https://github.com/tensor-compiler/mosaic-benchmarks.git
 [submodule "mosaic"]
 	path = mosaic
-	url = https://github.com/evanmwilliams/mosaic.git
+	url = https://github.com/cmu-syscall/mosaic.git
 	branch = mosaic-artifact-docker
