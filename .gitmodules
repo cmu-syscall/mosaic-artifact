@@ -4,4 +4,3 @@
 [submodule "mosaic"]
 	path = mosaic
 	url = https://github.com/cmu-syscall/mosaic.git
-	branch = mosaic-artifact-docker
