@@ -257,3 +257,20 @@ Fresh-image validation uses tag `mosaic-artifact-fig19`; the previously working
 - The full ten-size benchmark was not repeated in the fresh image. The earlier
   complete run passed in the repaired container; the fresh-image smoke checks
   verify that the new Dockerfile supplies all seven implementations and plotting.
+
+## Centralized library environment
+
+Moved every Fig. 19 header, linker flag, and helper definition from
+`sddmm/bench.sh` into the original `scripts/mosaic_env_var.sh`.
+The environment file defines `configure_mosaic_system SYSTEM` for mkl, gsl,
+blas, dot_blas, gemv_blas, tblis, and taco. Sourcing it keeps TBLIS as the
+original default (or uses `MOSAIC_SYSTEM` if supplied).
+The runner now only sources that file, loops over implementations, selects
+the system, and launches the benchmark. Provider selection is necessary because
+MKL, OpenBLAS, and GSL expose overlapping CBLAS symbols/headers; linking all
+providers together can silently use the wrong implementation.
+Dockerfile's existing COPY includes these changes on the next image build.
+
+Centralized-environment validation passed: all seven implementations at size
+100 produced median results without reported errors, and draw-fig19 succeeded.
+Log: `/tmp/mosaic-fig19-shared-env-smoke.log`. No full benchmark was repeated.
