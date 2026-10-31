@@ -1,4 +1,6 @@
 SHELL := /bin/bash
+PATH_TO_MOSAIC_ARTIFACT ?= $(abspath $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/../..)
+export PATH_TO_MOSAIC_ARTIFACT
 
 
 all: set-up-env kick-tires
@@ -93,10 +95,11 @@ draw-fig18:
 
 
 draw-fig19:
-	python3 $(PATH_TO_MOSAIC_ARTIFACT)/mosaic-benchmarks/run-figure.py \
+	MPLBACKEND=Agg python3 $(PATH_TO_MOSAIC_ARTIFACT)/mosaic-benchmarks/run-figure.py \
 	--data_dir=$(PATH_TO_MOSAIC_ARTIFACT)/scripts/bench-scripts/sddmm/result \
 	--type=vary_dim --systems=mkl,gsl,dot_blas,taco,tblis,gemv_blas,blas \
 	--name=fig19 --start_dim=100 --step_dim=200 --unit=ms
+	mkdir -p figs
 	cp ./sddmm/result/fig19.pdf figs/
 
 draw-fig20:

@@ -1,3 +1,31 @@
+## Run Fig. 19 automatically
+
+Initialize the source submodules, build the image, then start it:
+
+```bash
+git submodule update --init --recursive
+docker build -t mosaic-artifact .
+docker run --name mosaic-fig19 mosaic-artifact
+```
+
+The image installs MKL, GSL, OpenBLAS, plotting dependencies, and a pinned TBLIS
+revision. Its default startup command is `make run-fig19`, executed from
+`/mosaic-artifact/scripts/bench-scripts`. No dependency installation or environment
+sourcing is needed after startup. The complete benchmark can take several minutes.
+
+To also draw the PDF at startup and copy it back after the run:
+
+```bash
+docker run --name mosaic-fig19-plot mosaic-artifact \
+  bash -c 'make run-fig19 && make draw-fig19'
+docker cp mosaic-fig19-plot:/mosaic-artifact/scripts/bench-scripts/figs/fig19.pdf ./fig19.pdf
+```
+
+For an interactive shell instead, override the default command with
+`docker run --rm -it mosaic-artifact bash`.
+The image builds `taco-bench`; other compiler targets can be built separately.
+The additional-library instructions below are for other figures and workflows.
+
 ## Getting Started with Docker
 The following instructions only apply if you are not working on our AWS machine.
 
