@@ -1,29 +1,43 @@
-## Run Fig. 19 automatically
+## Use the Makefile with Docker
 
-Initialize the source submodules, build the image, then start it:
+Initialize the source submodules and build the image:
 
 ```bash
 git submodule update --init --recursive
 docker build -t mosaic-artifact .
-docker run --name mosaic-fig19 mosaic-artifact
 ```
 
 The image installs MKL, GSL, OpenBLAS, plotting dependencies, and a pinned TBLIS
-revision. Its default startup command is `make run-fig19`, executed from
-`/mosaic-artifact/scripts/bench-scripts`. No dependency installation or environment
-sourcing is needed after startup. The complete benchmark can take several minutes.
+revision. The image starts Bash by default; it does not automatically run a
+benchmark. It builds `taco-bench`; other compiler targets can be built separately.
 
-To also draw the PDF at startup and copy it back after the run:
+Start an interactive shell in the directory containing the benchmark Makefile:
 
 ```bash
-docker run --name mosaic-fig19-plot mosaic-artifact \
-  bash -c 'make run-fig19 && make draw-fig19'
-docker cp mosaic-fig19-plot:/mosaic-artifact/scripts/bench-scripts/figs/fig19.pdf ./fig19.pdf
+docker run --name mosaic-shell -it \
+  -w /mosaic-artifact/scripts/bench-scripts mosaic-artifact bash
 ```
 
-For an interactive shell instead, override the default command with
-`docker run --rm -it mosaic-artifact bash`.
-The image builds `taco-bench`; other compiler targets can be built separately.
+Inside the container, run `make <target>`, replacing `<target>` with any target
+from `scripts/bench-scripts/Makefile`. Some targets require additional libraries;
+see the instructions below.
+
+To run a target directly from the host:
+
+```bash
+docker run --name mosaic-task \
+  -w /mosaic-artifact/scripts/bench-scripts mosaic-artifact make <target>
+```
+
+Replace `<target>` before running this command. To copy a generated PDF back to
+the host, replace `<filename>` in:
+
+```bash
+docker cp mosaic-task:/mosaic-artifact/scripts/bench-scripts/figs/<filename>.pdf ./<filename>.pdf
+```
+
+Existing figure PDFs are copied from the repository when the image is built;
+their presence does not mean the benchmarks have run.
 The additional-library instructions below are for other figures and workflows.
 
 ## Getting Started with Docker
