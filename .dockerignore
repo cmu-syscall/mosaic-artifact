@@ -7,4 +7,3 @@
 tensor_algebra_systems_src/
 tensor_algebra_systems_lib/tblis/
 mosaic-benchmarks/data/spdata/
-scripts/bench-scripts/sddmm/result/

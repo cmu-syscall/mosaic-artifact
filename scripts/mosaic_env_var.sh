@@ -8,14 +8,23 @@ export TENSOR_ALGEBRA_LIB="$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
 # per process so a BLAS benchmark cannot silently resolve to another library.
 configure_mosaic_system() {
     local system="${1:-tblis}"
-    local tblis_prefix
+    local tblis_prefix mkl_root
     export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
     export LIB_PATH=""
     export INCLUDE_HEADERS=""
     export DYNAMIC_LIB_FILES=""
     case "$system" in
         mkl)
-            INCLUDE_PATH+=" -I/usr/include/mkl"
+            mkl_root="${MKLROOT:-}"
+            if [[ -z "$mkl_root" && -r /opt/intel/oneapi/mkl/latest/include/mkl.h ]]; then
+                mkl_root=/opt/intel/oneapi/mkl/latest
+            fi
+            if [[ -n "$mkl_root" ]]; then
+                INCLUDE_PATH+=" -I$mkl_root/include"
+                LIB_PATH="-L$mkl_root/lib/intel64 -Wl,-rpath,$mkl_root/lib/intel64"
+            else
+                INCLUDE_PATH+=" -I/usr/include/mkl"
+            fi
             INCLUDE_HEADERS='#include <mkl.h>
 void sgemm_mkl_internal(int dim, float *a, float *b, float *c) {
     MKL_INT n = dim;
@@ -36,7 +45,7 @@ void set_gsl_mat_data_row_major_s(gsl_matrix_float *mat, float *data) {
             DYNAMIC_LIB_FILES="-lopenblas"
             ;;
         tblis)
-            tblis_prefix="$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tblis"
+            tblis_prefix="${TBLIS_ROOT:-$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tblis}"
             INCLUDE_PATH+=" -D_GNU_SOURCE -I$tblis_prefix/include -I$tblis_prefix/include/tblis"
             LIB_PATH="-L$tblis_prefix/lib -Wl,-rpath,$tblis_prefix/lib"
             INCLUDE_HEADERS='#include <tblis.h>
