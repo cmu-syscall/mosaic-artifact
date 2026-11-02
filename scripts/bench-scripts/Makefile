@@ -1,4 +1,47 @@
 SHELL := /bin/bash
+.DEFAULT_GOAL := all
+
+MULTI_BENCH_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))multi-bench
+INPUT ?= synthetic
+DIMS ?= 250
+DENSITIES ?= 1
+MATRIX ?=
+BACKENDS ?= taco
+INTERFACES ?= $(BACKENDS)
+REPETITIONS ?= 10
+CONSTANT_FOLDING ?= true
+WARMUP ?= 0
+FILTER ?= .*
+OUT ?=
+PYTHON ?= python3
+export INPUT DIMS DENSITIES MATRIX BACKENDS INTERFACES REPETITIONS CONSTANT_FOLDING WARMUP FILTER OUT
+
+.PHONY: list-multi-interfaces
+list-multi-interfaces:
+	bash "$(MULTI_BENCH_DIR)/bench.sh" gemm --list-interfaces
+
+.PHONY: run-multi-gemm run-multi-spmm run-multi-sddmm
+run-multi-gemm:
+	bash "$(MULTI_BENCH_DIR)/bench.sh" gemm
+
+run-multi-spmm:
+	bash "$(MULTI_BENCH_DIR)/bench.sh" spmm
+
+run-multi-sddmm:
+	bash "$(MULTI_BENCH_DIR)/bench.sh" sddmm
+
+.PHONY: draw-multi-gemm draw-multi-spmm draw-multi-sddmm
+draw-multi-gemm:
+	@test -n "$(OUT)" || { echo "Specify OUT=/path/to/run"; exit 1; }
+	$(PYTHON) "$(MULTI_BENCH_DIR)/plot.py" --kernel gemm --run "$(OUT)"
+
+draw-multi-spmm:
+	@test -n "$(OUT)" || { echo "Specify OUT=/path/to/run"; exit 1; }
+	$(PYTHON) "$(MULTI_BENCH_DIR)/plot.py" --kernel spmm --run "$(OUT)"
+
+draw-multi-sddmm:
+	@test -n "$(OUT)" || { echo "Specify OUT=/path/to/run"; exit 1; }
+	$(PYTHON) "$(MULTI_BENCH_DIR)/plot.py" --kernel sddmm --run "$(OUT)"
 
 
 all: set-up-env kick-tires

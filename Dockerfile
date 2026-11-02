@@ -24,7 +24,7 @@ RUN apt-get update && \
         libtool-bin\
         bzip2 \
         && \
-        pip install numpy scipy pandas
+        pip install numpy scipy pandas matplotlib
 
 
 
@@ -36,13 +36,13 @@ COPY . /mosaic-artifact
 # Build the Mosaic Compiler
 RUN mkdir /temp
 WORKDIR /mosaic-artifact/mosaic
-RUN mkdir build
+RUN mkdir -p build
 
 # Set up a directory that will store all the external systems.
 # To actually set up systems, use the scripts provided in 
 # mosaic-artifact/scripts
 WORKDIR /mosaic-artifact
-RUN mkdir tensor_algebra_systems_src
+RUN mkdir -p tensor_algebra_systems_src
 
 
 WORKDIR /mosaic-artifact/scripts
