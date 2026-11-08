@@ -50,7 +50,7 @@ run-fig21:
 draw-fig13:
 	python3 $(PATH_TO_MOSAIC_ARTIFACT)/mosaic-benchmarks/run-figure.py \
 	--data_dir=$(PATH_TO_MOSAIC_ARTIFACT)/scripts/bench-scripts/gemv/result \
-	--type=vary_dim --systems=blas \
+	--type=vary_dim --systems=mkl,taco,tblis,gsl,blas \
 	--name=fig13 --start_dim=100 --step_dim=250 --unit=ms
 	cp ./gemv/result/fig13.pdf figs/
 	
