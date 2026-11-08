@@ -8,7 +8,7 @@ cd $TENSOR_ALGEBRA_SRC
 rm -rf tblis
 
 # Step 1: Download
-git clone https://github.com/devinamatthews/tblis.git
+git clone https://github.com/MatthewsResearchGroup/tblis.git
 
 # Step 2: Build library from source and put lib + headers to in the
 # TENSOR_ALGEBRA_LIB/tblis dir.
