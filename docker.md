@@ -1,149 +1,196 @@
-## Getting Started with Docker
-The following instructions only apply if you are not working on our AWS machine.
+# Reproducible Mosaic benchmark container
 
+## Build from this checkout
 
-- Download this repository and run the following commands to build and attach a docker image from the provided Dockerfile.
+The Dockerfile builds the current artifact and Mosaic sources, including local
+edits. Initialize submodules on a fresh checkout first. Do not reset an existing
+modified Mosaic checkout just to build Docker.
 
+```sh
+# Only on a fresh clone:
+git submodule update --init --recursive
 
- ```
- git clone <link to this repo>
- git submodule update --init --recursive
- docker build -t mosaic-artifact .
- ```
-
-
-- Once the image is built, run a docker container with a bash terminal
- ```
- docker run -d -it --rm mosaic-artifact bash
- ```
-- The above command should print out a `CONTAINER_ID`. Attach to the
- docker container using the command below and the `CONTAINER_ID` from the
- previous step.
- ```
- docker attach <CONTAINER_ID>
- ```
-
-
- *Note:* Do not type `exit` in the docker terminal as this will kill the container. The proper way to exit the docker is the sequence `CTRL-p, CTRL-q`.
-
-
-- Download the external functions that can be run on your machine. Refer to the [Downloading External Functions](#downloading-external-functions) section to learn more about which machines each library can be run on and how to download these functions with our provided scripts.
-
-
-## Testing Functionality.
-
-
-To test basic functionality, in the ```scripts/bench-scripts/``` directory run:
-
-
-```
- make run-tblis-tests
+# From the mosaic-artifact directory:
+docker build --platform linux/amd64 --build-arg BUILD_JOBS=4 -t mosaic-benchmarks:local .
 ```
 
+Required source files include the updated Mosaic compiler/interfaces, all nine
+multi-benchmark files and their CMake targets, and the matching artifact wrappers.
+The Dockerfile alone cannot add those changes to an older Mosaic revision.
+Uninitialized submodules fail the build; no branch is silently fetched/reset.
 
-This will download the TBLIS source code in ```tensor_algebra_systems_src```, build from source and place the resultant dynamic libraries in ```tensor_algebra_systems_lib```. It will also run tests that target the TBLIS external library.
+This image installs MKL, OpenBLAS, GSL, TBLIS, Python plotting dependencies, and
+Z3 for Mosaic's existing SMT code.
+It builds taco-bench, taco-test, and all nine taco-multi-* executables with the
+existing CMake targets. It does not replace Mosaic's matching, format conversion,
+code generation, library interfaces, or benchmark timing.
 
+The Ubuntu base is digest-pinned, APT packages come from the dated Ubuntu snapshot
+in the Dockerfile, and TBLIS 1.3.0 is pinned to
+c4f81e08b2827e72335baa7bf91a245f72c43970. TBLIS uses its supplied configure/make
+build with pthreads and without its optional BLAS dependency, preventing accidental
+OpenBLAS linkage when selecting MKL. Runtime CPU dispatch remains enabled; no
+machine-specific -march=native flags are used. The bootstrap stage supplies only
+TLS certificates; the final image's packages come from the snapshot.
 
-## Adding Additional Libraries
-### Downlaoding CPU External Functions
+Do not pass current TBLIS 2.x options (--enable-compat or BLIS_CONFIG_FAMILY) to
+this 1.3.0 build. Updating the TBLIS revision requires revalidating the interfaces.
 
+Old host builds, Git metadata, installed TBLIS binaries, and prior benchmark results
+are excluded by .dockerignore. Source-file hashes, installed package versions,
+TBLIS configuration, and build arguments are recorded in /opt/mosaic-build-info.
+Keep the exact source checkout or a private source archive as well as the image.
+A matching Dockerfile with different source edits is not the same experiment.
 
-We provide a list of external functions that can be downloaded on a CPU and which machines they are compatible with. We also provide scripts to download and build each library. We also note any performance-related quirks related to some functions (for example, the tuning time of ATLAS).
+## Start, reopen, and stop
 
+Run these on the Mac, not inside a container:
 
-We provide a list of known issues. Please note that this list may be not comprehensive and is based on our experience. The authors are not experts on these external systems.
+```sh
+mkdir -p "$HOME/Desktop/research-workspace/benchmark-results/docker"
+docker run -dit --platform linux/amd64 --name mosaic-research \
+  --mount "type=bind,source=$HOME/Desktop/research-workspace/benchmark-results/docker,target=/results" \
+  mosaic-benchmarks:local
+docker exec -it mosaic-research bash
+```
 
+The container starts in /mosaic-artifact/scripts/bench-scripts. The entrypoint and
+interactive Bash setup source the standard artifact environment script, defaulting
+to TBLIS plus MKL. The entrypoint only configures environment variables and executes
+your command; it is not a benchmark driver.
 
+From a docker exec shell, exit returns to the Mac without stopping the container.
+Later use docker exec -it mosaic-research bash again, or docker start mosaic-research
+first if stopped. To stop it from the Mac: docker stop mosaic-research.
+No --rm is used for the working container. Outputs under /results are already on
+the Mac; no docker cp is needed.
 
+## Run and plot
 
-| Library | Known Issues | Download Instructions | Time Taken to Complete |
-| ------ | ------ | ------ | ------ |
-| CBLAS                   | Will need to include \<Accelerate/Accelerate.h\> on Macs | For ubuntu: ```sudo apt-get install openblas``` | 5 minutes|
-| MKL + AVX               | M1 machines will emulate these functions and performance suffers| For ubuntu: ```sudo apt-get install libmkl-dev libmkl-avx2``` | 5 minutes |
-| TBLIS                   | Could not successfully compile with clang | ```./scripts/tblis_download.sh``` | 20 Minutes|
-| GSL + Tensor  Extension + (optional) ATLAS || ```./scripts/gsl_download.sh``` | 4 minutes (GSL) + 2 minutes (Tensor Extension) + (optional ~8 hours ATLAS)|
-| AVX | On x86 machines only| | Should be downloaded with MKL|
+Inside the container:
 
+```sh
+source /mosaic-artifact/scripts/mosaic_env_var.sh tblis,mkl
+cd "$PATH_TO_MOSAIC_ARTIFACT/scripts/bench-scripts"
+make list-multi-interfaces
+OUT="/results/spmm-$(date +%Y%m%d-%H%M%S)"
+make run-multi-spmm INPUT=synthetic DIMS=250 DENSITIES=0.1 \
+  INTERFACES='tblis.*,mkl.*' REPETITIONS=10 CONSTANT_FOLDING=true WARMUP=0 OUT="$OUT"
+make draw-multi-spmm OUT="$OUT"
+```
 
-Please note that we provide the quickest build for ATLAS without any additional
-passed in using ```sudo apt-install libatlas-base-dev```. We provide an ```atlas_download.sh``` script
-that can be used to link against the tuned version. To run this and download
-GSL again, uncomment the ```./atlas_download.sh``` line in
-```scripts/gsl_download.sh```.
+Results are in $OUT/0/results.json, $OUT/0/code/schedule*.c, and
+$OUT/0/plots/schedules.pdf (also schedules.html). Each dimension/density pair
+gets a numbered directory. Always choose a new OUT for a new run.
 
+Library environment selection and interface selection have different jobs:
 
-### Linking External Functions
+```sh
+source /mosaic-artifact/scripts/mosaic_env_var.sh taco
+source /mosaic-artifact/scripts/mosaic_env_var.sh tblis
+source /mosaic-artifact/scripts/mosaic_env_var.sh tblis,mkl
+source /mosaic-artifact/scripts/mosaic_env_var.sh tblis,openblas
+source /mosaic-artifact/scripts/mosaic_env_var.sh gsl
+```
 
+Each source command replaces the preceding header/link configuration.
+Matteo's configure_mosaic_system shell function is also available after sourcing;
+its blas/dot_blas/gemv_blas names select OpenBLAS. Library adapters stay in their
+existing wrapper headers, not inline C functions inside environment variables.
+Use the one appropriate to the next run, not all five. The script is for Bash
+on Linux (Bash 4+), not macOS's stock Bash 3.2 or zsh. It sets the existing
+INCLUDE_HEADERS, INCLUDE_PATH, LIB_PATH, and DYNAMIC_LIB_FILES variables.
+INTERFACES offers functions to autoAccelerate; it does not configure the linker
+or guarantee that a function matches. Do not combine MKL, GSL, and OpenBLAS as
+CBLAS providers in one process. TBLIS can be combined with any one of them.
 
-To link against the systems that were downloaded, you will need to modify the variables in ```scripts/bench-scripts/mosaic_env_var.sh```. An example has already been included for TBLIS.
+The default is one thread per library. Override OMP_NUM_THREADS, MKL_NUM_THREADS,
+TBLIS_NUM_THREADS, and OPENBLAS_NUM_THREADS explicitly for other experiments.
+MKL uses the LP64 sequential runtime, not hardcoded AVX2 implementation libraries.
+AMD64 Docker on Apple Silicon uses emulation: these are not native CPU timings.
 
+Noninteractive docker exec does not run the image's entrypoint. Source the
+environment explicitly in each such command:
 
-- To add the path for the headers of the library, modify the ```INCLUDE_PATH``` variable.
-- To add the path for the shared object file of the library, modify the ```LIB_PATH``` variable. To add this path to the runtime linking path, use the ```-Wl-R``` flag. Modify the ```DYNAMIC_LIB_FILES``` variable to actually link against the library.
-- To add the ```#include <header>.h``` to the code that Mosaic generates, modify the ```INCLUDE_HEADERS``` variable.
+```sh
+docker exec mosaic-research bash -lc '
+  source /mosaic-artifact/scripts/mosaic_env_var.sh tblis,mkl
+  cd "$PATH_TO_MOSAIC_ARTIFACT/scripts/bench-scripts"
+  make list-multi-interfaces
+'
+```
 
+## Check a fresh build
 
+From the Mac:
 
+```sh
+docker exec mosaic-research bash /mosaic-artifact/scripts/docker-smoke.sh \
+  "/results/smoke-$(date +%Y%m%d-%H%M%S)"
+```
 
-## Running Benchmarks
+This uses the ordinary Make run/draw workflow: six synthetic kernels across four
+CPU configurations, three Matrix Market cases, and a dimension/density sweep
+with folding disabled. It also runs the five original GEMV benchmarks at dimension
+250. It checks JSON timing rows, generated C, plots, and actual
+dense GEMM library bindings, and runs the focused existing compiler regressions.
+It is not a comprehensive numerical or performance validation.
 
+The pre-existing figure benchmarks are also built. Their shell scripts' systems
+lists and plotting lists must still agree with your selected library environment.
+Some legacy kernels/interfaces have known compiler or adapter limitations; an
+installed library is not proof every historical figure succeeds. See the
+multi-bench README for supported contracts and exclusions.
 
-To run a specific benchmark, run:
+## Optional CUDA image
 
+The same Dockerfile accepts a CUDA 12.6 development base on an x86-64 NVIDIA host:
 
- ```
- make run-fig<#>
- ```
+```sh
+docker build --platform linux/amd64 --build-arg WITH_CUDA=true \
+  --build-arg BASE_IMAGE=nvidia/cuda:12.6.3-devel-ubuntu22.04@sha256:d49bb8a4ff97fb5fe477947a3f02aa8c0a53eae77e11f00ec28618a0bcaa2ad1 \
+  -t mosaic-benchmarks:cuda .
+docker run --gpus all -it --name mosaic-cuda \
+  -e MOSAIC_LIBRARIES=tblis,mkl,cuda mosaic-benchmarks:cuda
+```
 
+This requires the host NVIDIA driver and NVIDIA Container Toolkit. The base
+supplies cuBLAS, cuSPARSE, and CUDA headers/libraries. The environment script
+supports cuda, cublas, and cusparse, optionally combined with CPU libraries.
+These are the existing Mosaic host-C adapters; no custom GPU driver or alternate
+compiler path is added, and CMake -DCUDA=ON is not needed for these adapters.
 
-To make a specific figure (assuming the data has been generated using the previous command), run:
+CUDA is not executable on the Mac. This x86 image must not be used as a native
+performance environment on DeltaAI's ARM Grace nodes. There, build natively with
+the site CUDA module and omit x86-only MKL, following the existing Delta workflow.
+GPU execution and this optional image variant must be verified on the target
+machine; CPU-container tests do not validate CUDA.
 
+Unavailable/unsafe legacy interfaces (for example the existing MKL sparse-add
+adapter), fixed-width AVX/tile bindings without enforced shape constraints,
+Apple Accelerate on Linux, and the separate Stardust simulator are not made
+working merely by installing packages. Their exclusions remain intentional.
 
- ```
- make draw-fig<#>
- ```
+## Preserve an exact image
 
+From the Mac, after building:
 
-For example, if you want to run and draw fig13, you will run ```make run-fig13 && make draw-fig13```.
+```sh
+docker image inspect mosaic-benchmarks:local --format '{{.Id}}'
+docker image save mosaic-benchmarks:local | gzip > mosaic-benchmarks-image.tar.gz
+shasum -a 256 mosaic-benchmarks-image.tar.gz
+# Restore without downloading or rebuilding:
+docker image load < mosaic-benchmarks-image.tar.gz
+```
 
+Retain the source archive and image together in private off-machine storage.
+The earlier full-container backup is separate and remains unchanged. Fresh
+source builds reproduce the environment and workflow, not bit-identical random
+inputs, timings, or build timestamps. Refresh the pinned snapshot deliberately
+for security updates and rerun validation.
 
-However, you may need to specify a subset of external systems to run for the benchmark. To change the external functions that the benchmark uses, change the
-```systems``` variable in the ```bench.sh``` file. The ```bench.sh``` is located inside the folder for a specific benchmark.
-
-
-For example, if you want to limit the GEMV benchmark to run using only ```mkl``` and ```blas``` change the ```systems``` variable to:
-
-
- ```
-   systems=("blas" "mkl")
- ```
-
-
-To plot only these two systems, also change the ```--systems``` argument used in the ```draw-fig13``` rule in the Makefile to ```--systems=mkl,blas```.
-
-
-
-
-## General Docker Functionality
-
-  - List all docker images
-    `docker images`
-
-
-  - Remove docker image
-    `docker image rm IMAGE`
-
-
-  - List all (stopped and running) docker containers
-    `docker ps -a`
-
-
-  - Stop one or more running containers
-    `docker stop CONTAINERS`
-
-
-  - Remove stopped docker container
-    `docker rm CONTAINERS`
+References: [Ubuntu snapshots](https://snapshot.ubuntu.com/) and
+[NVIDIA container requirements](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/sample-workload.html).
 
 
 
