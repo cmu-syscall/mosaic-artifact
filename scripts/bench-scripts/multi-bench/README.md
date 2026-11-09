@@ -573,3 +573,50 @@ including the empty-input cases. The check is not part of measured benchmarks.
 All nine executables rebuilt successfully. Six additional regression runs of
 GEMM/SpMM/SDDMM (synthetic and the ds33.mtx fixture) passed after the shared result
 allocation change. A Matrix Market request for TTV was rejected as intended.
+
+## Integrated validation (November 9, 2026)
+
+Mosaic revision 8da32ae8474ae203a42e44582529d491f80de9d1 and artifact revision
+1617484 were validated together. The older audits above describe their earlier
+snapshots, not the current SDDMM binding behavior.
+
+- The ordinary Make run/draw workflow passed 31 CPU configurations: six synthetic
+  kernels with four library selections, three Matrix Market cases, and four
+  dimension/density combinations with folding disabled. These produced 1,339
+  schedule/configuration pairs and 2,678 timing rows, with C files and plots.
+  The five original GEMV benchmarks also passed at dimension 250.
+- Seven CPU library checks compared rectangular products to scalar references,
+  with two calls each: TBLIS GEMM/SDDMM, MKL GEMM/SpMM, GSL GEMM, and CBLAS GEMM
+  using MKL and OpenBLAS providers in separate processes.
+- A fresh recursive clone built the Docker image from the supplied Dockerfile.
+  That final image passed 43 compiler/typed-fixture tests, five TBLIS/MKL library
+  checks, and a normal dimension-32 GEMM run and plot. Dependency layers were
+  cached; this was a fresh source build, not a claim of a no-cache image build.
+- Native DeltaAI GH200 validation passed GEMM, SpMM, and SDDMM at dimension 500,
+  density 0.1, three repetitions, and CUDA/OpenBLAS interfaces. The respective
+  schedule counts were 6, 4, and 208. A dimension-250 GEMM run with folding off
+  added 71 schedules. All four runs produced JSON and generated C; plotting
+  was done locally after downloading the results.
+- Delta also passed rectangular numerical checks for CUDA GEMM, CUDA SpMM,
+  CUDA-bound SDDMM, OpenBLAS GEMM, and the nested-reduction lowering regression.
+  The successful job used one GPU for 3m33s; including two failed setup attempts,
+  total allocated GPU wall time was 5m49s. No validation jobs remained queued.
+
+On the CPU GEMM-250 comparison, folding reduced 73 candidates to 8: unbound
+candidates fell from 67 to 2, while the six bound candidates stayed present.
+This is a search-space comparison, not a runtime speedup measurement. Structural
+deduplication remains enabled when constant folding is disabled.
+
+SDDMM now explicitly represents the inner reduction. At dimension 32 with TBLIS
+and MKL offered, it returned 138 TACO candidates and 35 candidates for each of
+TBLIS, CBLAS, and MKL. Delta returned 138 TACO, 35 CUDA, and 35 OpenBLAS candidates.
+These counts include different rewrites; they are not counts of distinct library
+functions or a guarantee of globally unique algorithms.
+
+Limits: CPU Docker timings on Apple Silicon are emulated. CUDA adapter timings
+include allocation, host/device transfers, synchronization, and cleanup, not
+only device execution. The old Delta TBLIS installation was API-incompatible
+with these legacy interfaces and was excluded; the standard Delta selection is
+CUDA plus OpenBLAS. The optional CUDA Docker image was not tested. Successful
+workflow runs and selected numerical regressions are bounded evidence, not
+exhaustive validation of all generated schedules or format conversions.

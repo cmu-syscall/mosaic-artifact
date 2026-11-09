@@ -166,6 +166,12 @@ the site CUDA module and omit x86-only MKL, following the existing Delta workflo
 GPU execution and this optional image variant must be verified on the target
 machine; CPU-container tests do not validate CUDA.
 
+On November 9, native DeltaAI CUDA/OpenBLAS GEMM, SpMM, and SDDMM runs passed at
+dimension 500, with separate rectangular numerical checks. This validates the
+native site-module workflow, not the optional x86 CUDA image above. Delta's old
+TBLIS installation was incompatible with the legacy TBLIS interface and was not
+included. See the multi-bench README for the exact validation scope.
+
 Unavailable/unsafe legacy interfaces (for example the existing MKL sparse-add
 adapter), fixed-width AVX/tile bindings without enforced shape constraints,
 Apple Accelerate on Linux, and the separate Stardust simulator are not made
@@ -191,6 +197,16 @@ for security updates and rerun validation.
 
 References: [Ubuntu snapshots](https://snapshot.ubuntu.com/) and
 [NVIDIA container requirements](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/sample-workload.html).
+
+## Last verified CPU image
+
+The November 9 build used artifact 1617484 with Mosaic
+8da32ae8474ae203a42e44582529d491f80de9d1 from a fresh recursive clone. It produced
+image sha256:7d42c157bdca00b6b1ef9c707e933929d03ce5209481c994fa39d3c475daaeb7,
+locally tagged mosaic-benchmarks:meeting-20261109. The image passed 43 focused
+compiler/typed-fixture tests, five TBLIS/MKL numerical checks, and the normal
+GEMM run/draw workflow. It has not been published to a container registry.
+Later documentation-only commits do not change that recorded build provenance.
 
 
 
