@@ -8,3 +8,5 @@ bench-scripts/blockedSparse_4T_5/result/
 bench-scripts/mmadd/result/
 bench-scripts/sddmm/result/
 bench-scripts/ttv/result/
+__pycache__/
+*.pyc
