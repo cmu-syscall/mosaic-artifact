@@ -1,64 +1,3 @@
-## Use the Makefile with Docker
-
-Initialize the source submodules and build the image:
-
-```bash
-git submodule update --init --recursive
-docker build -t mosaic-artifact .
-```
-
-The Dockerfile installs MKL, GSL, OpenBLAS, Python plotting/data packages, and Z3
-directly, then runs `scripts/tblis_download.sh` to build the pinned TBLIS version.
-Both `taco-bench` and `taco-test` are built.
-
-Start the container with:
-
-```bash
-docker run --name mosaic-shell -it \
-  -w /mosaic-artifact/scripts/bench-scripts mosaic-artifact bash
-```
-
-The interactive shell loads the default OpenBLAS environment. Figure 13 (GEMV)
-runs and plots only the `blas` provider. Other benchmark
-providers still need their corresponding header and linker settings; installation
-alone does not configure every runner. CUDA runs require a separately configured
-CUDA toolkit and GPU-enabled container. Stardust uses the repository's recorded data.
-
-To copy a generated PDF back to the host, replace `<filename>` in:
-
-```bash
-docker cp mosaic-shell:/mosaic-artifact/scripts/bench-scripts/figs/<filename>.pdf ./<filename>.pdf
-```
-
-Existing figure PDFs are copied from the repository when the image is built;
-their presence does not mean the benchmarks have run.
-The additional-library instructions below are for other figures and workflows.
-
-## Run GEMV with OpenBLAS
-
-In the container:
-
-```bash
-source /mosaic-artifact/scripts/mosaic_env_var.sh
-cd "$PATH_TO_MOSAIC_ARTIFACT/scripts/bench-scripts"
-make run-fig13
-make draw-fig13
-```
-
-By default, the environment inserts `cblas.h` into generated C and links kernels
-with `-lopenblas`. Each figure runner sources the environment again with its
-current `systems` entry before launching a separate benchmark process. The existing `bench_gemv_blas` implementation maps matrix-vector
-multiplication to `CblasGemv`; no new compiler interface is required. The plot is
-written to `scripts/bench-scripts/figs/fig13.pdf`.
-
-When sourced from Bash outside Docker, the environment script infers the checkout
-root unless `PATH_TO_MOSAIC_ARTIFACT` is already set. A local run also requires
-OpenBLAS development files and a built `mosaic/build/bin/taco-bench`.
-
-Only the GEMV figure workflow has been restricted to OpenBLAS. Other figures and
-the full unit suite still require their providers' environment settings. TBLIS
-is still installed by the Dockerfile, but is no longer the default kernel library.
-
 ## Getting Started with Docker
 The following instructions only apply if you are not working on our AWS machine.
 
@@ -105,7 +44,7 @@ We provide a list of external functions that can be downloaded on a CPU and whic
 
 We provide a list of known issues. Please note that this list may be not comprehensive and is based on our experience. The authors are not experts on these external systems.
 
-
+CBLAS, MLK, GSL, have already been added for convenience. 
 
 
 | Library | Known Issues | Download Instructions | Time Taken to Complete |

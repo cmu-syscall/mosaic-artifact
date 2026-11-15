@@ -1,0 +1,1657 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  11.99MB
+Step 1/22 : FROM docker.io/ubuntu:26.04
+ ---> 6a06111c3b0a
+Step 2/22 : LABEL description="mosaic-artifact"
+ ---> Using cache
+ ---> 7e2be71d6439
+Step 3/22 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> 7eafc542559a
+Step 4/22 : ENV CC=gcc-13 CXX=g++-13
+ ---> Using cache
+ ---> a08a8eb1215f
+Step 5/22 : ENV CMAKE_POLICY_VERSION_MINIMUM=3.10
+ ---> Using cache
+ ---> 8a157292da78
+Step 6/22 : ENV PATH_TO_MOSAIC_ARTIFACT=/mosaic-artifact
+ ---> Using cache
+ ---> b22b1faf41c9
+Step 7/22 : ENV INCLUDE_HEADERS="" MPLBACKEND=Agg
+ ---> Using cache
+ ---> f327c0a59f7b
+Step 8/22 : ARG BUILD_JOBS=2
+ ---> Using cache
+ ---> 20471e601f64
+Step 9/22 : RUN apt-get update
+ ---> Using cache
+ ---> 32fe02e88230
+Step 10/22 : RUN apt-get install -y build-essential gcc-13 g++-13 ca-certificates wget curl git
+ ---> Using cache
+ ---> 5ecae3680f26
+Step 11/22 : RUN apt-get install -y cmake pkg-config
+ ---> Using cache
+ ---> 50a02df8db6b
+Step 12/22 : RUN apt-get install -y python3 python3-dev python3-numpy python3-scipy python3-pandas python3-matplotlib python3-z3
+ ---> Using cache
+ ---> be12a8ca2480
+Step 13/22 : RUN apt-get install -y libmkl-dev libgsl-dev libopenblas-dev
+ ---> Using cache
+ ---> 03935373f7d7
+Step 14/22 : RUN apt-get install -y graphviz xxd time vim texinfo libtool-bin bzip2 autoconf automake
+ ---> Using cache
+ ---> 5dae258d78f4
+Step 15/22 : SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ ---> Using cache
+ ---> bee55da158e9
+Step 16/22 : COPY . /mosaic-artifact
+ ---> d1bac24a5193
+Step 17/22 : RUN mkdir -p /temp /mosaic-artifact/tensor_algebra_systems_src
+ ---> Running in a1f257f94703
+ ---> Removed intermediate container a1f257f94703
+ ---> f784b65826e9
+Step 18/22 : RUN source /mosaic-artifact/scripts/mosaic_env_var.sh &&     mkdir -p "$TENSOR_ALGEBRA_SRC" "$TENSOR_ALGEBRA_LIB" &&     env -u LIB_PATH bash -e /mosaic-artifact/scripts/tblis_download.sh
+ ---> Running in 95f8f52986d8
+[91mCloning into 'tblis'...
+[0m[91mNote: switching to 'd5c9100565afa215ad28c02e2b07860d3698cb3a'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at d5c9100 Update TCI.
+[0mchecking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a race-free mkdir -p... /usr/bin/mkdir -p
+checking for gawk... no
+checking for mawk... mawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make supports nested variables... (cached) yes
+checking whether to enable maintainer-specific portions of Makefiles... no
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc-13 accepts -g... yes
+checking for gcc-13 option to enable C11 features... none needed
+checking whether gcc-13 understands -c and -o together... yes
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of gcc-13... gcc3
+checking dependency style of gcc-13... gcc3
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for gawk... (cached) mawk
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking whether the compiler supports GNU C++... yes
+checking whether g++-13 accepts -g... yes
+checking for g++-13 option to enable C++11 features... none needed
+checking dependency style of g++-13... gcc3
+checking whether g++-13 supports C++17 features with -std=c++17... yes
+checking for library containing clock_gettime... none required
+checking for OpenMP SIMD pragma... not supported
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for hbwmalloc.h... no
+checking for memkind.h... no
+checking for library containing hbw_malloc... no
+checking for hwloc.h... no
+checking for library containing hwloc_topology_init... no
+checking for lscpu... lscpu
+checking for sysctl... no
+checking for sysctlbyname... no
+checking for sysconf... yes
+checking for _SC_NPROCESSORS_CONF defined in unistd.h... yes
+checking for _SC_NPROCESSORS_ONLN defined in unistd.h... yes
+checking for ptrdiff_t... yes
+checking whether ptrdiff_t is signed... yes
+checking for index length type... ptrdiff_t
+checking for ptrdiff_t... (cached) yes
+checking whether ptrdiff_t is signed... (cached) yes
+checking for index stride type... ptrdiff_t
+checking for char... yes
+checking for index label type... char
+checking for __x86_64__ defined... yes
+checking for _M_X64 defined... no
+checking for __i386 defined... no
+checking for _M_IX86 defined... no
+checking for __aarch64__ defined... no
+checking for __INTEL_COMPILER defined... no
+checking compiler vendor... gcc
+checking compiler version... 13.4.0
+checking whether inline AVX can be compiled... yes
+checking whether inline FMA3 can be compiled... yes
+checking whether inline FMA4 can be compiled... yes
+checking whether inline AVX-512F can be compiled... yes
+checking whether inline AVX-512DQ can be compiled... yes
+checking enabled configurations... core2 sandybridge haswell skx1 skx2 knl bulldozer piledriver excavator zen reference
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc-13... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking how to convert x86_64-unknown-linux-gnu file names to x86_64-unknown-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-unknown-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for file... file
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for ar... ar
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc-13 object... ok
+checking for sysroot... no
+checking for a working dd... /usr/bin/dd
+checking how to truncate binary pipes... /usr/bin/dd bs=4096 count=1
+checking for mt... no
+checking if : is a manifest tool... no
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc-13 supports -fno-rtti -fno-exceptions... no
+checking for gcc-13 option to produce PIC... -fPIC -DPIC
+checking if gcc-13 PIC flag -fPIC -DPIC works... yes
+checking if gcc-13 static flag -static works... yes
+checking if gcc-13 supports -c -o file.o... yes
+checking if gcc-13 supports -c -o file.o... (cached) yes
+checking whether the gcc-13 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking how to run the C++ preprocessor... g++-13 -std=c++17 -E
+checking for ld used by g++-13 -std=c++17... /usr/bin/ld -m elf_x86_64
+checking if the linker (/usr/bin/ld -m elf_x86_64) is GNU ld... yes
+checking whether the g++-13 -std=c++17 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking for g++-13 -std=c++17 option to produce PIC... -fPIC -DPIC
+checking if g++-13 -std=c++17 PIC flag -fPIC -DPIC works... yes
+checking if g++-13 -std=c++17 static flag -static works... yes
+checking if g++-13 -std=c++17 supports -c -o file.o... yes
+checking if g++-13 -std=c++17 supports -c -o file.o... (cached) yes
+checking whether the g++-13 -std=c++17 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking dynamic linker characteristics... (cached) GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating src/configs/foreach_type.h
+config.status: creating src/configs/foreach_config.h
+config.status: creating src/configs/foreach_config_and_type.h
+config.status: creating src/configs/include_configs.hpp
+config.status: creating config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+config.status: executing src/tblis_config.h commands
+config.status: creating src/tblis_config.h - prefix TBLIS for config.h defines
+=== configuring in src/external/tci (/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci)
+configure: running /bin/bash ./configure --disable-option-checking '--prefix=/mosaic-artifact/tensor_algebra_systems_lib/tblis'  'CC=gcc-13' 'CXX=g++-13' --cache-file=/dev/null --srcdir=.
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a race-free mkdir -p... /usr/bin/mkdir -p
+checking for gawk... no
+checking for mawk... mawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make supports nested variables... (cached) yes
+checking whether to enable maintainer-specific portions of Makefiles... no
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc-13 accepts -g... yes
+checking for gcc-13 option to enable C11 features... none needed
+checking whether gcc-13 understands -c and -o together... yes
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of gcc-13... gcc3
+checking whether the compiler supports GNU C++... yes
+checking whether g++-13 accepts -g... yes
+checking for g++-13 option to enable C++11 features... none needed
+checking dependency style of g++-13... gcc3
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc-13... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking how to convert x86_64-unknown-linux-gnu file names to x86_64-unknown-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-unknown-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for ar... ar
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc-13 object... ok
+checking for sysroot... no
+checking for a working dd... /usr/bin/dd
+checking how to truncate binary pipes... /usr/bin/dd bs=4096 count=1
+checking for mt... no
+checking if : is a manifest tool... no
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc-13 supports -fno-rtti -fno-exceptions... no
+checking for gcc-13 option to produce PIC... -fPIC -DPIC
+checking if gcc-13 PIC flag -fPIC -DPIC works... yes
+checking if gcc-13 static flag -static works... yes
+checking if gcc-13 supports -c -o file.o... yes
+checking if gcc-13 supports -c -o file.o... (cached) yes
+checking whether the gcc-13 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking how to run the C++ preprocessor... g++-13 -E
+checking for ld used by g++-13... /usr/bin/ld -m elf_x86_64
+checking if the linker (/usr/bin/ld -m elf_x86_64) is GNU ld... yes
+checking whether the g++-13 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking for g++-13 option to produce PIC... -fPIC -DPIC
+checking if g++-13 PIC flag -fPIC -DPIC works... yes
+checking if g++-13 static flag -static works... yes
+checking if g++-13 supports -c -o file.o... yes
+checking if g++-13 supports -c -o file.o... (cached) yes
+checking whether the g++-13 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking dynamic linker characteristics... (cached) GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking how to run the C preprocessor... gcc-13 -E
+checking whether gcc-13 is Clang... no
+checking whether pthreads work with "-pthread" and "-lpthread"... yes
+checking for joinable pthread attribute... PTHREAD_CREATE_JOINABLE
+checking whether more special flags are required for pthreads... no
+checking for PTHREAD_PRIO_INHERIT... yes
+checking for pthread_spin_init... yes
+checking for pthread_mutex_init... yes
+checking for pthread_barrier_init... yes
+checking for gcc-13 option to support OpenMP... -fopenmp
+checking for tbb/tbb.h... yes
+checking for library containing TBB_runtime_interface_version... no
+checking for dispatch/dispatch.h... no
+checking for library containing dispatch_async_f... no
+checking for windows.h... no
+checking for ppl.h... no
+checking for os/lock.h... no
+checking for os_unfair_lock_lock... no
+checking for libkern/OSAtomic.h... no
+checking for OSSpinLockLock... no
+checking for __atomic_load_n... yes
+checking for __atomic_load... yes
+checking for __atomic_store_n... yes
+checking for __atomic_store... yes
+checking for __atomic_exchange_n... yes
+checking for __atomic_exchange... yes
+checking for __atomic_compare_exchange_n... yes
+checking for __atomic_compare_exchange... yes
+checking for __atomic_add_fetch... yes
+checking for __atomic_sub_fetch... yes
+checking for __atomic_and_fetch... yes
+checking for __atomic_xor_fetch... yes
+checking for __atomic_or_fetch... yes
+checking for __atomic_nand_fetch... yes
+checking for __atomic_fetch_add... yes
+checking for __atomic_fetch_sub... yes
+checking for __atomic_fetch_and... yes
+checking for __atomic_fetch_xor... yes
+checking for __atomic_fetch_or... yes
+checking for __atomic_fetch_nand... yes
+checking for __atomic_test_and_set... yes
+checking for __atomic_clear... yes
+checking for __atomic_thread_fence... yes
+checking for __atomic_signal_fence... yes
+checking for __atomic_always_lock_free... yes
+checking for __atomic_is_lock_free... yes
+checking for library containing __atomic_compare_exchange_16... -latomic
+checking mutex type... atomic_spinlock
+checking barrier type... spin_barrier
+checking thread model... openmp
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating tci/tci_config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+make  all-recursive
+make[1]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+Making all in src/external/tci
+make[2]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+  CC       tci/barrier.lo
+  CC       tci/context.lo
+  CC       tci/mutex.lo
+  CC       tci/parallel.lo
+  CC       tci/slot.lo
+  CC       tci/work_item.lo
+  CC       tci/communicator.lo
+  CC       tci/task_set.lo
+  CXXLD    lib/libtci.la
+[91mar: `u' modifier ignored since `D' is the default (see `U')
+[0mmake[2]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+make[2]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+  CXX      test/test.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/test.hpp:4,
+                 from test/test.cxx:2:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/dot.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/dot.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/reduce.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/reduce.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/scale.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/scale.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/replicate.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/replicate.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/trace.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/trace.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/1t/transpose.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/1t/../test.hpp:4,
+                 from test/1t/transpose.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3m/gemm_ukr.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3m/../test.hpp:4,
+                 from test/3m/gemm_ukr.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3m/gemm.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3m/../test.hpp:4,
+                 from test/3m/gemm.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3m/gemv.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3m/../test.hpp:4,
+                 from test/3m/gemv.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3m/ger.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3m/../test.hpp:4,
+                 from test/3m/ger.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3t/contract.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3t/../test.hpp:4,
+                 from test/3t/contract.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3t/mult.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3t/../test.hpp:4,
+                 from test/3t/mult.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3t/outer_prod.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3t/../test.hpp:4,
+                 from test/3t/outer_prod.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      test/3t/weight.o
+[91mIn file included from /usr/include/c++/13/algorithm:60,
+                 from test/3t/../test.hpp:4,
+                 from test/3t/weight.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/iface/1t/add.lo
+  CXX      src/iface/1t/dot.lo
+  CXX      src/iface/1t/reduce.lo
+  CXX      src/iface/1t/scale.lo
+  CXX      src/iface/1t/set.lo
+  CXX      src/iface/1t/shift.lo
+  CXX      src/iface/3t/mult.lo
+  CXX      src/internal/0/add.lo
+  CXX      src/internal/0/mult.lo
+  CXX      src/internal/0/reduce.lo
+  CXX      src/internal/1t/dense/add.lo
+  CXX      src/internal/1t/dense/dot.lo
+  CXX      src/internal/1t/dense/reduce.lo
+  CXX      src/internal/1t/dense/scale.lo
+  CXX      src/internal/1t/dense/set.lo
+  CXX      src/internal/1t/dense/shift.lo
+  CXX      src/internal/1t/dpd/add.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/add.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/dpd/dot.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/dot.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/dpd/reduce.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/reduce.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/dpd/scale.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/scale.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/dpd/set.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/set.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/dpd/shift.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/dpd/util.hpp:4,
+                 from src/internal/1t/dpd/shift.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/indexed/add.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/indexed/util.hpp:4,
+                 from src/internal/1t/indexed/add.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/indexed/dot.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/indexed/util.hpp:4,
+                 from src/internal/1t/indexed/dot.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/indexed/reduce.lo
+  CXX      src/internal/1t/indexed/scale.lo
+  CXX      src/internal/1t/indexed/set.lo
+  CXX      src/internal/1t/indexed/shift.lo
+  CXX      src/internal/1t/indexed_dpd/add.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/indexed_dpd/util.hpp:6,
+                 from src/internal/1t/indexed_dpd/add.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/indexed_dpd/dot.lo
+[91mIn file included from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3707,
+                 from ./src/util/basic_types.h:18,
+                 from src/internal/1t/indexed_dpd/util.hpp:6,
+                 from src/internal/1t/indexed_dpd/dot.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/1t/indexed_dpd/reduce.lo
+  CXX      src/internal/1t/indexed_dpd/scale.lo
+  CXX      src/internal/1t/indexed_dpd/set.lo
+  CXX      src/internal/1t/indexed_dpd/shift.lo
+  CXX      src/internal/3t/dense/mult.lo
+[91mIn file included from /usr/include/c++/13/string:51,
+                 from /usr/include/c++/13/stdexcept:39,
+                 from /usr/include/c++/13/system_error:43,
+                 from ./src/external/tci/tci/mutex.h:54,
+                 from ./src/external/tci/tci/barrier.h:7,
+                 from ./src/external/tci/tci.h:4,
+                 from ./src/util/thread.h:10,
+                 from src/internal/3t/dense/mult.hpp:4,
+                 from src/internal/3t/dense/mult.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/3t/dpd/mult.lo
+[91mIn file included from /usr/include/c++/13/string:51,
+                 from /usr/include/c++/13/stdexcept:39,
+                 from /usr/include/c++/13/system_error:43,
+                 from ./src/external/tci/tci/mutex.h:54,
+                 from ./src/external/tci/tci/barrier.h:7,
+                 from ./src/external/tci/tci.h:4,
+                 from ./src/util/thread.h:10,
+                 from src/internal/3t/dpd/mult.hpp:4,
+                 from src/internal/3t/dpd/mult.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/3t/indexed/mult.lo
+[91mIn file included from /usr/include/c++/13/string:51,
+                 from /usr/include/c++/13/stdexcept:39,
+                 from /usr/include/c++/13/system_error:43,
+                 from ./src/external/tci/tci/mutex.h:54,
+                 from ./src/external/tci/tci/barrier.h:7,
+                 from ./src/external/tci/tci.h:4,
+                 from ./src/util/thread.h:10,
+                 from src/internal/3t/indexed/mult.hpp:4,
+                 from src/internal/3t/indexed/mult.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/internal/3t/indexed_dpd/mult.lo
+[91mIn file included from /usr/include/c++/13/string:51,
+                 from /usr/include/c++/13/stdexcept:39,
+                 from /usr/include/c++/13/system_error:43,
+                 from ./src/external/tci/tci/mutex.h:54,
+                 from ./src/external/tci/tci/barrier.h:7,
+                 from ./src/external/tci/tci.h:4,
+                 from ./src/util/thread.h:10,
+                 from src/internal/3t/indexed_dpd/mult.hpp:4,
+                 from src/internal/3t/indexed_dpd/mult.cxx:1:
+In static member function 'static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const long int; _Up = long int; bool _IsMove = false]',
+    inlined from '_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from '_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from '_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from '_OI std::copy(_II, _II, _OI) [with _II = const long int*; _OI = long int*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from '_OutputIterator std::__copy_n(_RandomAccessIterator, _Size, _OutputIterator, random_access_iterator_tag) [with _RandomAccessIterator = const long int*; _Size = long int; _OutputIterator = long int*]' at /usr/include/c++/13/bits/stl_algo.h:731:23,
+    inlined from '_OIter std::copy_n(_IIter, _Size, _OIter) [with _IIter = const long int*; _Size = long int; _OIter = long int*]' at /usr/include/c++/13/bits/stl_algo.h:763:27,
+    inlined from 'void MArray::array_1d<T>::adaptor<U>::slurp(T*) const [with U = std::array<long int, 0>; T = long int]' at ./src/util/../external/marray/marray/array_1d.hpp:141:28:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: argument 2 null where non-null expected [-Wnonnull]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_algobase.h:437:30: note: in a call to built-in function 'void* __builtin_memmove(void*, const void*, long unsigned int)'
+[0m  CXX      src/configs/configs.lo
+  CXX      src/util/basic_types.lo
+  CXX      src/util/configs.lo
+  CXX      src/util/gemm_thread.lo
+  CXX      src/util/cpuid.lo
+  CXX      src/util/env.lo
+  CXX      src/util/random.lo
+  CXX      src/util/thread.lo
+  CXX      src/configs/bulldozer/config.lo
+  CXX      src/configs/piledriver/config.lo
+  CXX      src/configs/excavator/config.lo
+  CXX      src/configs/zen/config.lo
+  CXX      src/configs/core2/config.lo
+  CXX      src/configs/sandybridge/config.lo
+  CXX      src/configs/haswell/config.lo
+  CXX      src/configs/knl/config.lo
+  CXX      src/configs/skx1/config.lo
+  CXX      src/configs/skx2/vpu_count.lo
+  CXX      src/configs/skx2/config.lo
+  CXX      src/configs/reference/lib_libreference_la-config.lo
+  CXXLD    lib/libreference.la
+  CC       src/configs/bulldozer/lib_libbulldozer_la-bli_gemm_asm_d4x6_fma4.lo
+  CXX      src/configs/bulldozer/lib_libbulldozer_la-config_ker.lo
+  CXXLD    lib/libbulldozer.la
+  CC       src/configs/piledriver/lib_libpiledriver_la-bli_gemm_asm_d8x3.lo
+  CXX      src/configs/piledriver/lib_libpiledriver_la-config_ker.lo
+  CXXLD    lib/libpiledriver.la
+  CXX      src/configs/excavator/lib_libexcavator_la-config_ker.lo
+  CXXLD    lib/libexcavator.la
+  CXX      src/configs/zen/lib_libzen_la-config_ker.lo
+  CXXLD    lib/libzen.la
+  CC       src/configs/core2/lib_libcore2_la-bli_gemm_asm_d4x4.lo
+  CXX      src/configs/core2/lib_libcore2_la-config_ker.lo
+  CXXLD    lib/libcore2.la
+  CC       src/configs/sandybridge/lib_libsandybridge_la-bli_gemm_asm_d8x4.lo
+  CXX      src/configs/sandybridge/lib_libsandybridge_la-config_ker.lo
+  CXXLD    lib/libsandybridge.la
+  CC       src/configs/haswell/lib_libhaswell_la-bli_gemm_asm_d6x8.lo
+  CXX      src/configs/haswell/lib_libhaswell_la-config_ker.lo
+  CXXLD    lib/libhaswell.la
+  CC       src/configs/knl/lib_libknl_la-bli_spackm_opt_24x16.lo
+  CC       src/configs/knl/lib_libknl_la-bli_dpackm_opt_24x8.lo
+  CC       src/configs/knl/lib_libknl_la-bli_dpackm_opt_30x8.lo
+  CC       src/configs/knl/lib_libknl_la-bli_sgemm_opt_24x16.lo
+  CC       src/configs/knl/lib_libknl_la-bli_dgemm_opt_24x8.lo
+  CXX      src/configs/knl/lib_libknl_la-config_ker.lo
+  CXXLD    lib/libknl.la
+  CXX      src/configs/skx1/lib_libskx1_la-config_ker.lo
+  CXXLD    lib/libskx1.la
+  CC       src/configs/skx2/lib_libskx2_la-bli_sgemm_opt_12x32_l2.lo
+  CC       src/configs/skx2/lib_libskx2_la-bli_dgemm_opt_12x16_l2.lo
+  CXX      src/configs/skx2/lib_libskx2_la-config_ker.lo
+  CXXLD    lib/libskx2.la
+  CXXLD    lib/libtblis.la
+copying selected object files to avoid basename conflicts...
+  CXXLD    bin/test
+make[2]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+make[1]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+Making install in src/external/tci
+make[1]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+make[2]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/lib'
+ /bin/bash ./libtool   --mode=install /usr/bin/install -c   lib/libtci.la '/mosaic-artifact/tensor_algebra_systems_lib/tblis/lib'
+libtool: install: /usr/bin/install -c lib/.libs/libtci.so.0.0.0 /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtci.so.0.0.0
+libtool: install: (cd /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib && { ln -s -f libtci.so.0.0.0 libtci.so.0 || { rm -f libtci.so.0 && ln -s libtci.so.0.0.0 libtci.so.0; }; })
+libtool: install: (cd /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib && { ln -s -f libtci.so.0.0.0 libtci.so || { rm -f libtci.so && ln -s libtci.so.0.0.0 libtci.so; }; })
+libtool: install: /usr/bin/install -c lib/.libs/libtci.lai /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtci.la
+libtool: install: /usr/bin/install -c lib/.libs/libtci.a /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtci.a
+libtool: install: chmod 644 /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtci.a
+libtool: install: ranlib /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtci.a
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tci'
+ /usr/bin/install -c -m 644  tci/tci_config.h tci/tci_global.h tci/barrier.h tci/communicator.h tci/context.h tci/mutex.h tci/parallel.h tci/pipeline.h tci/slot.h tci/task_set.h tci/work_item.h tci/yield.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tci'
+ /usr/bin/install -c -m 644  tci.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/.'
+make[2]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+make[1]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis/src/external/tci'
+make[1]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+make[2]: Entering directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/lib'
+ /bin/bash ./libtool   --mode=install /usr/bin/install -c   lib/libtblis.la '/mosaic-artifact/tensor_algebra_systems_lib/tblis/lib'
+[91mlibtool: warning: relinking 'lib/libtblis.la'
+[0mlibtool: install: (cd /mosaic-artifact/tensor_algebra_systems_src/tblis; /bin/bash "/mosaic-artifact/tensor_algebra_systems_src/tblis/libtool"  --silent --tag CXX --mode=relink g++-13 -std=c++17 -O3 -pthread -o lib/libtblis.la -rpath /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib src/iface/1t/add.lo src/iface/1t/dot.lo src/iface/1t/reduce.lo src/iface/1t/scale.lo src/iface/1t/set.lo src/iface/1t/shift.lo src/iface/3t/mult.lo src/internal/0/add.lo src/internal/0/mult.lo src/internal/0/reduce.lo src/internal/1t/dense/add.lo src/internal/1t/dense/dot.lo src/internal/1t/dense/reduce.lo src/internal/1t/dense/scale.lo src/internal/1t/dense/set.lo src/internal/1t/dense/shift.lo src/internal/1t/dpd/add.lo src/internal/1t/dpd/dot.lo src/internal/1t/dpd/reduce.lo src/internal/1t/dpd/scale.lo src/internal/1t/dpd/set.lo src/internal/1t/dpd/shift.lo src/internal/1t/indexed/add.lo src/internal/1t/indexed/dot.lo src/internal/1t/indexed/reduce.lo src/internal/1t/indexed/scale.lo src/internal/1t/indexed/set.lo src/internal/1t/indexed/shift.lo src/internal/1t/indexed_dpd/add.lo src/internal/1t/indexed_dpd/dot.lo src/internal/1t/indexed_dpd/reduce.lo src/internal/1t/indexed_dpd/scale.lo src/internal/1t/indexed_dpd/set.lo src/internal/1t/indexed_dpd/shift.lo src/internal/3t/dense/mult.lo src/internal/3t/dpd/mult.lo src/internal/3t/indexed/mult.lo src/internal/3t/indexed_dpd/mult.lo src/configs/configs.lo src/util/basic_types.lo src/util/configs.lo src/util/gemm_thread.lo src/util/cpuid.lo src/util/env.lo src/util/random.lo src/util/thread.lo src/configs/bulldozer/config.lo src/configs/piledriver/config.lo src/configs/excavator/config.lo src/configs/zen/config.lo src/configs/core2/config.lo src/configs/sandybridge/config.lo src/configs/haswell/config.lo src/configs/knl/config.lo src/configs/skx1/config.lo src/configs/skx2/vpu_count.lo src/configs/skx2/config.lo src/external/tci/lib/libtci.la lib/libreference.la lib/libbulldozer.la lib/libpiledriver.la lib/libexcavator.la lib/libzen.la lib/libcore2.la lib/libsandybridge.la lib/libhaswell.la lib/libknl.la lib/libskx1.la lib/libskx2.la )
+libtool: install: /usr/bin/install -c lib/.libs/libtblis.so.0.0.0T /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtblis.so.0.0.0
+libtool: install: (cd /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib && { ln -s -f libtblis.so.0.0.0 libtblis.so.0 || { rm -f libtblis.so.0 && ln -s libtblis.so.0.0.0 libtblis.so.0; }; })
+libtool: install: (cd /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib && { ln -s -f libtblis.so.0.0.0 libtblis.so || { rm -f libtblis.so && ln -s libtblis.so.0.0.0 libtblis.so; }; })
+libtool: install: /usr/bin/install -c lib/.libs/libtblis.lai /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtblis.la
+libtool: install: /usr/bin/install -c lib/.libs/libtblis.a /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtblis.a
+libtool: install: chmod 644 /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtblis.a
+libtool: install: ranlib /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib/libtblis.a
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /mosaic-artifact/tensor_algebra_systems_lib/tblis/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/iface/1t'
+ /usr/bin/install -c -m 644 src/iface/1t/add.h src/iface/1t/dot.h src/iface/1t/reduce.h src/iface/1t/scale.h src/iface/1t/set.h src/iface/1t/shift.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/iface/1t'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/iface/3t'
+ /usr/bin/install -c -m 644 src/iface/3t/mult.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/iface/3t'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/external/marray/marray'
+ /usr/bin/install -c -m 644 src/external/marray/marray/detail/utility.hpp src/external/marray/marray/detail/vector_avx.hpp src/external/marray/marray/detail/vector_avx512.hpp src/external/marray/marray/detail/vector_sse41.hpp src/external/marray/marray/detail/vector.hpp src/external/marray/marray/dpd/dpd_range.hpp src/external/marray/marray/dpd/dpd_marray_base.hpp src/external/marray/marray/dpd/dpd_marray_view.hpp src/external/marray/marray/dpd/dpd_marray.hpp src/external/marray/marray/fwd/expression_fwd.hpp src/external/marray/marray/fwd/marray_fwd.hpp src/external/marray/marray/indexed/indexed_marray_base.hpp src/external/marray/marray/indexed/indexed_marray_view.hpp src/external/marray/marray/indexed/indexed_marray.hpp src/external/marray/marray/indexed_dpd/indexed_dpd_marray_base.hpp src/external/marray/marray/indexed_dpd/indexed_dpd_marray_view.hpp src/external/marray/marray/indexed_dpd/indexed_dpd_marray.hpp src/external/marray/marray/array_1d.hpp src/external/marray/marray/array_2d.hpp src/external/marray/marray/expression.hpp src/external/marray/marray/expression.hpp src/external/marray/marray/index_iterator.hpp src/external/marray/marray/marray_base.hpp src/external/marray/marray/marray_iterator.hpp src/external/marray/marray/marray_slice.hpp src/external/marray/marray/marray_view.hpp src/external/marray/marray/marray.hpp src/external/marray/marray/range.hpp src/external/marray/marray/rotate.hpp src/external/marray/marray/short_vector.hpp src/external/marray/marray/types.hpp '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/external/marray/marray'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/memory'
+ /usr/bin/install -c -m 644 src/memory/aligned_allocator.hpp src/memory/alignment.hpp src/memory/memory_pool.hpp src/memory/stack_allocator.hpp '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/memory'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis'
+ /usr/bin/install -c -m 644 src/tblis.h src/tblis_config.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/external/stl_ext/stl_ext'
+ /usr/bin/install -c -m 644 src/external/stl_ext/stl_ext/algorithm.hpp src/external/stl_ext/stl_ext/any.hpp src/external/stl_ext/stl_ext/bounded_vector.hpp src/external/stl_ext/stl_ext/complex.hpp src/external/stl_ext/stl_ext/cosort.hpp src/external/stl_ext/stl_ext/fill_iterator.hpp src/external/stl_ext/stl_ext/global_ptr.hpp src/external/stl_ext/stl_ext/iostream.hpp src/external/stl_ext/stl_ext/ptr_list.hpp src/external/stl_ext/stl_ext/ptr_vector.hpp src/external/stl_ext/stl_ext/string.hpp src/external/stl_ext/stl_ext/type_traits.hpp src/external/stl_ext/stl_ext/vector.hpp src/external/stl_ext/stl_ext/zip.hpp '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/external/stl_ext/stl_ext'
+ /usr/bin/mkdir -p '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/util'
+ /usr/bin/install -c -m 644 src/util/basic_types.h src/util/configs.h src/util/macros.h src/util/thread.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/util'
+make[2]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+make[1]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
+ ---> Removed intermediate container 95f8f52986d8
+ ---> 6eb81a212a15
+Step 19/22 : RUN python3 -c 'import numpy, scipy, pandas, matplotlib, z3'
+ ---> Running in 10e8c3c5f805
+ ---> Removed intermediate container 10e8c3c5f805
+ ---> 7b181c824081
+Step 20/22 : RUN echo "source /mosaic-artifact/scripts/mosaic_env_var.sh" >> /root/.bashrc
+ ---> Running in 6e0bb9085302
+ ---> Removed intermediate container 6e0bb9085302
+ ---> 71abd77bf354
+Step 21/22 : RUN cmake -S /mosaic-artifact/mosaic -B /mosaic-artifact/mosaic/build     -DCMAKE_BUILD_TYPE=Release     -DCMAKE_POLICY_VERSION_MINIMUM=3.10     -DGIT_SUBMODULE=OFF     -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON     -DBENCHMARK_ENABLE_TESTING=OFF
+ ---> Running in 46804b1d8abf
+-- The C compiler identification is GNU 13.4.0
+-- The CXX compiler identification is GNU 13.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc-13 - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++-13 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+[91msetting policy CMP0079 to new
+[0m[91m-- Release Build
+[0m[91m-- Shared library
+[0m-- Failed to find LLVM FileCheck
+-- Found Git: /usr/bin/git (found version "2.53.0")
+-- git version: v0.0.0 normalized to 0.0.0
+-- Version: 1.7.0
+-- Looking for shm_open in rt
+-- Looking for shm_open in rt - found
+-- Performing Test HAVE_CXX_FLAG_WALL
+-- Performing Test HAVE_CXX_FLAG_WALL - Success
+-- Performing Test HAVE_CXX_FLAG_WEXTRA
+-- Performing Test HAVE_CXX_FLAG_WEXTRA - Success
+-- Performing Test HAVE_CXX_FLAG_WSHADOW
+-- Performing Test HAVE_CXX_FLAG_WSHADOW - Success
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL - Success
+-- Performing Test HAVE_CXX_FLAG_WERROR
+-- Performing Test HAVE_CXX_FLAG_WERROR - Success
+-- Performing Test HAVE_CXX_FLAG_WSUGGEST_OVERRIDE
+-- Performing Test HAVE_CXX_FLAG_WSUGGEST_OVERRIDE - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS - Success
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32 - Failed
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS - Success
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED - Success
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WD654
+-- Performing Test HAVE_CXX_FLAG_WD654 - Failed
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY - Failed
+-- Performing Test HAVE_CXX_FLAG_COVERAGE
+-- Performing Test HAVE_CXX_FLAG_COVERAGE - Success
+-- Compiling and running to test HAVE_STD_REGEX
+-- Performing Test HAVE_STD_REGEX -- success
+-- Compiling and running to test HAVE_GNU_POSIX_REGEX
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Compiling and running to test HAVE_POSIX_REGEX
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Compiling and running to test HAVE_STEADY_CLOCK
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (6.7s)
+-- Generating done (0.0s)
+[91mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    GIT_SUBMODULE
+
+
+[0m-- Build files have been written to: /mosaic-artifact/mosaic/build
+ ---> Removed intermediate container 46804b1d8abf
+ ---> 0020b73c267a
+Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench taco-test --parallel "${BUILD_JOBS}"
+ ---> Running in acba4d9c84b4
+[  0%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[  0%] Building CXX object src/CMakeFiles/taco.dir/cuda.cpp.o
+[  0%] Building CXX object src/CMakeFiles/taco.dir/error.cpp.o
+[  1%] Building CXX object src/CMakeFiles/taco.dir/format.cpp.o
+[  1%] Building CXX object src/CMakeFiles/taco.dir/ir_tags.cpp.o
+[  2%] Building CXX object src/CMakeFiles/taco.dir/taco_tensor_t.cpp.o
+[  2%] Building CXX object src/CMakeFiles/taco.dir/target.cpp.o
+[  2%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[  3%] Building CXX object src/CMakeFiles/taco.dir/tensor.cpp.o
+[  5%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[  5%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[  6%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[  6%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/check.cc.o
+[  7%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[  7%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[  7%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[  7%] Building CXX object src/CMakeFiles/taco.dir/type.cpp.o
+[  8%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[  8%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accel_interface.cpp.o
+[  8%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/counter.cc.o
+[ 10%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[ 10%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[ 11%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerate_search.cpp.o
+[ 12%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[ 12%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[ 12%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/sleep.cc.o
+[ 13%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[ 13%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[ 15%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[ 15%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerator_notation.cpp.o
+[ 15%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/timers.cc.o
+[ 16%] Linking CXX static library ../../../lib/libbenchmark.a
+[ 16%] Built target benchmark
+[ 16%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[ 17%] Linking CXX static library ../../../lib/libbenchmark_main.a
+[ 17%] Built target benchmark_main
+[ 18%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerator_notation_abstract.cpp.o
+[ 18%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerator_notation_printer.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerator_notation_rewriter.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/accelerator_notation_visitor.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/taco.dir/accelerator_notation/code_gen_dynamic_order.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/taco.dir/codegen/codegen.cpp.o
+[91m/mosaic-artifact/mosaic/src/accelerator_notation/code_gen_dynamic_order.cpp: In function 'std::string taco::exec(const char*)':
+/mosaic-artifact/mosaic/src/accelerator_notation/code_gen_dynamic_order.cpp:44:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   44 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 21%] Building CXX object src/CMakeFiles/taco.dir/codegen/codegen_c.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/taco.dir/codegen/codegen_cuda.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/taco.dir/codegen/module.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/taco.dir/error/error_checks.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/taco.dir/error/error_messages.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation.cpp.o
+[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In function 'bool taco::isReductionNotation(IndexStmt, std::string*)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3515:53: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 3515 |   for (auto& var : to<Assignment>(stmt).getFreeVars()) {
+      |                                                     ^
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3515:52: note: the temporary was destroyed at the end of the full expression 'taco::to(IndexStmt) [with SubType = Assignment]().taco::Assignment::getFreeVars()'
+ 3515 |   for (auto& var : to<Assignment>(stmt).getFreeVars()) {
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In function 'bool taco::isReductionNotationScheduled(IndexStmt, ProvenanceGraph, std::string*)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3559:53: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 3559 |   for (auto& var : to<Assignment>(stmt).getFreeVars()) {
+      |                                                     ^
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3559:52: note: the temporary was destroyed at the end of the full expression 'taco::to(IndexStmt) [with SubType = Assignment]().taco::Assignment::getFreeVars()'
+ 3559 |   for (auto& var : to<Assignment>(stmt).getFreeVars()) {
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In function 'taco::Access taco::replaceTemporary(IndexStmt, IndexExpr, AcceleratorAssignment, ArgumentMap)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3863:47: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 3863 |   for (auto var: assign.getLhs().getIndexVars()){
+      |                                               ^
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:3863:46: note: the temporary was destroyed at the end of the full expression 'taco::AcceleratorAssignment::getLhs() const().taco::AcceleratorAccess::getIndexVars()'
+ 3863 |   for (auto var: assign.getLhs().getIndexVars()){
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In function 'taco::ConcreteAccelerateCodeGenerator taco::getConcreteCodeGenerator(IndexExpr, IndexExpr&, ArgumentMap, FunctionInterface)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:4137:47: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 4137 |   for (auto var: assign.getLhs().getIndexVars()){
+      |                                               ^
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:4137:46: note: the temporary was destroyed at the end of the full expression 'taco::AcceleratorAssignment::getLhs() const().taco::AcceleratorAccess::getIndexVars()'
+ 4137 |   for (auto var: assign.getLhs().getIndexVars()){
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In function 'taco::Access taco::constructTiledResult(FunctionInterface, std::map<IndexVar, IndexVar>, IndexExpr, std::map<IndexVar, int>, ArgumentMap)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:4345:49: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 4345 |   for (auto &var : assign.getLhs().getIndexVars()) {
+      |                                                 ^
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:4345:48: note: the temporary was destroyed at the end of the full expression 'taco::AcceleratorAssignment::getLhs() const().taco::AcceleratorAccess::getIndexVars()'
+ 4345 |   for (auto &var : assign.getLhs().getIndexVars()) {
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: In member function 'std::vector<taco::IndexStmt> taco::IndexStmt::autoAccelerate(taco::IndexStmt, std::vector<taco::FunctionInterface>) const':
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:4755:21: warning: comparison of integer expressions of different signedness: 'int' and 'std::vector<taco::IndexStmt>::size_type' {aka 'long unsigned int'} [-Wsign-compare]
+ 4755 |   for (int i = 0; i < possibleRewrites.size(); i++){
+      |                   ~~^~~~~~~~~~~~~~~~~~~~~~~~~
+[0m[ 25%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation_nodes.cpp.o
+[91m/mosaic-artifact/mosaic/src/index_notation/index_notation_nodes.cpp: In constructor 'taco::CallNode::CallNode(std::string, const std::vector<taco::IndexExpr>&, OpImpl, const taco::IterationAlgebra&, const std::vector<taco::Property>&, const std::map<std::vector<int>, std::function<taco::ir::Expr(const std::vector<taco::ir::Expr>&)> >&, const std::vector<int>&)':
+/mosaic-artifact/mosaic/src/index_notation/index_notation_nodes.cpp:49:22: warning: unused variable 'pair' [-Wunused-variable]
+   49 |     for (const auto& pair: regionDefinitions) {
+      |                      ^~~~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp: At global scope:
+/mosaic-artifact/mosaic/src/index_notation/index_notation.cpp:1006:13: warning: 'void taco::simplifyNegatives(IndexStmt, std::map<IndexExpr, std::vector<IndexExpr> >&)' defined but not used [-Wunused-function]
+ 1006 | static void simplifyNegatives(IndexStmt stmt, std::map<IndexExpr, std::vector<IndexExpr>> &exprToreplace){
+      |             ^~~~~~~~~~~~~~~~~
+[0m[ 25%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation_nodes_abstract.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation_printer.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation_rewriter.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/taco.dir/index_notation/index_notation_visitor.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/taco.dir/index_notation/intrinsic.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/taco.dir/index_notation/iteration_algebra.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/taco.dir/index_notation/iteration_algebra_printer.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/taco.dir/index_notation/kernel.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/taco.dir/index_notation/properties.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/taco.dir/index_notation/property_pointers.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/taco.dir/index_notation/provenance_graph.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/taco.dir/index_notation/schedule.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/taco.dir/index_notation/tensor_operator.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/taco.dir/index_notation/transformations.cpp.o
+[91m/mosaic-artifact/mosaic/src/index_notation/transformations.cpp: In member function 'virtual void taco::SetAssembleStrategy::apply(taco::IndexStmt, std::string*) const::InlineTemporaries::visit(const taco::AssignmentNode*)':
+/mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1657:21: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 1657 |         const auto& oldIndices =
+      |                     ^~~~~~~~~~
+/mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1658:61: note: the temporary was destroyed at the end of the full expression 'taco::to(IndexExpr) [with SubType = Access]().taco::Access::getIndexVars()'
+ 1658 |             to<Access>(tmpUse[lhsTensor].first).getIndexVars();
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[91m/mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1665:21: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 1665 |         const auto& oldCoords =
+      |                     ^~~~~~~~~
+/mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1666:59: note: the temporary was destroyed at the end of the full expression 'taco::Assignment::getLhs() const().taco::Access::getIndexVars()'
+ 1666 |             tmpUse[lhsTensor].second.getLhs().getIndexVars();
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+[0m[ 32%] Building CXX object src/CMakeFiles/taco.dir/ir/ir.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_generators.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_printer.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_rewriter.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_verifier.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_visitor.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/taco.dir/ir/simplify.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/taco.dir/ir/workspace_rewriter.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/taco.dir/lower/expr_tools.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/taco.dir/lower/iteration_forest.cpp.o
+[ 39%] Building CXX object src/CMakeFiles/taco.dir/lower/iteration_graph.cpp.o
+[ 39%] Building CXX object src/CMakeFiles/taco.dir/lower/iterator.cpp.o
+[ 40%] Building CXX object src/CMakeFiles/taco.dir/lower/lower.cpp.o
+[ 40%] Building CXX object src/CMakeFiles/taco.dir/lower/lowerer_impl.cpp.o
+[ 41%] Building CXX object src/CMakeFiles/taco.dir/lower/lowerer_impl_imperative.cpp.o
+[ 41%] Building CXX object src/CMakeFiles/taco.dir/lower/merge_lattice.cpp.o
+[91m/mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp: In member function 'taco::ir::Stmt taco::LowererImplImperative::lowerMergeCasesWithExplicitZeroChecks(taco::ir::Expr, taco::IndexVar, taco::IndexStmt, taco::MergeLattice, const std::set<taco::Access>&, taco::MergeStrategy)':
+/mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp:2049:38: warning: suggest parentheses around '&&' within '||' [-Wparentheses]
+ 2049 |     if (lattice.points().size() == 1 && lattice.iterators().size() == 1
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[0m[91mIn file included from /mosaic-artifact/mosaic/include/taco/type.h:8,
+                 from /mosaic-artifact/mosaic/include/taco/format.h:8,
+                 from /mosaic-artifact/mosaic/include/taco/lower/mode_format_impl.h:11,
+                 from /mosaic-artifact/mosaic/include/taco/lower/mode_format_compressed.h:4,
+                 from /mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp:1:
+/mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp: In member function 'taco::ir::Expr taco::LowererImplImperative::lowerArgument(taco::Argument, taco::TensorVar, taco::TensorVar, std::vector<taco::DeclVarArg>&, bool, taco::IndexExpr)':
+/mosaic-artifact/mosaic/include/taco/error.h:98:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   98 |   taco::ErrorReport(__FILE__,__FUNCTION__,__LINE__, false, nullptr,            \
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   99 |                     taco::ErrorReport::User, false)
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp:2922:15: note: in expansion of macro 'taco_uerror'
+ 2922 |               taco_uerror << "Unimplimented" << endl;
+      |               ^~~~~~~~~~~
+/mosaic-artifact/mosaic/src/lower/lowerer_impl_imperative.cpp:2925:7: note: here
+ 2925 |       case USER_DEFINED:
+      |       ^~~~
+[0m[ 41%] Building CXX object src/CMakeFiles/taco.dir/lower/mode.cpp.o
+[ 43%] Building CXX object src/CMakeFiles/taco.dir/lower/mode_access.cpp.o
+[ 43%] Building CXX object src/CMakeFiles/taco.dir/lower/mode_format_compressed.cpp.o
+[ 44%] Building CXX object src/CMakeFiles/taco.dir/lower/mode_format_dense.cpp.o
+[ 44%] Building CXX object src/CMakeFiles/taco.dir/lower/mode_format_impl.cpp.o
+[ 45%] Building CXX object src/CMakeFiles/taco.dir/lower/mode_format_singleton.cpp.o
+[ 45%] Building CXX object src/CMakeFiles/taco.dir/lower/tensor_path.cpp.o
+[ 45%] Building CXX object src/CMakeFiles/taco.dir/parser/einsum_parser.cpp.o
+[ 46%] Building CXX object src/CMakeFiles/taco.dir/parser/lexer.cpp.o
+[ 46%] Building CXX object src/CMakeFiles/taco.dir/parser/parser.cpp.o
+[ 48%] Building CXX object src/CMakeFiles/taco.dir/parser/schedule_parser.cpp.o
+[ 48%] Building CXX object src/CMakeFiles/taco.dir/storage/array.cpp.o
+[ 49%] Building CXX object src/CMakeFiles/taco.dir/storage/file_io_mtx.cpp.o
+[ 49%] Building CXX object src/CMakeFiles/taco.dir/storage/file_io_rb.cpp.o
+[ 50%] Building CXX object src/CMakeFiles/taco.dir/storage/file_io_tns.cpp.o
+[ 50%] Building CXX object src/CMakeFiles/taco.dir/storage/index.cpp.o
+[ 50%] Building CXX object src/CMakeFiles/taco.dir/storage/pack.cpp.o
+[ 51%] Building CXX object src/CMakeFiles/taco.dir/storage/storage.cpp.o
+[ 51%] Building CXX object src/CMakeFiles/taco.dir/storage/typed_index.cpp.o
+[ 53%] Building CXX object src/CMakeFiles/taco.dir/storage/typed_value.cpp.o
+[ 53%] Building CXX object src/CMakeFiles/taco.dir/util/env.cpp.o
+[ 54%] Building CXX object src/CMakeFiles/taco.dir/util/files.cpp.o
+[ 54%] Building CXX object src/CMakeFiles/taco.dir/util/name_generator.cpp.o
+[ 54%] Building CXX object src/CMakeFiles/taco.dir/util/strings.cpp.o
+[ 55%] Linking CXX shared library ../lib/libtaco.so
+[ 55%] Built target taco
+[ 55%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench.cpp.o
+[ 56%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockSparse_blas.cpp.o
+[ 56%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockSparse_gsl.cpp.o
+[ 58%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockSparse_taco.cpp.o
+[ 58%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockSparse_tblis.cpp.o
+[ 58%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_5_cblas.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_cblas.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_cblas.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_cblas.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_cblas.cpp:18:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   18 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[ 59%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_5_gsl.cpp.o
+[ 59%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_5_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_gsl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_gsl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_mkl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_gsl.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_gsl.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_mkl.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_mkl.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[ 60%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_5_taco.cpp.o
+[ 60%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_cblas.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_taco.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_taco.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_taco.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_5_taco.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_cblas.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_cblas.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_cblas.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_cblas.cpp:18:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   18 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[ 62%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_gsl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 62%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_mkl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_mkl.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_mkl.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[ 63%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_taco.cpp.o
+[ 63%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_tblis.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_taco.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_taco.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_taco.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_taco.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_tblis.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_tblis.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_tblis.cpp: At global scope:
+/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_tblis.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
+   19 | static std::string exec(const char* cmd) {
+      |                    ^~~~
+[0m[ 63%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_dot_blas.cpp.o
+[ 64%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_dot_gsl.cpp.o
+[ 64%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_dot_taco.cpp.o
+[ 65%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_dot_tblis.cpp.o
+[ 65%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_gemv_blas.cpp.o
+[ 67%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_gemv_gsl.cpp.o
+[ 67%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_gemv_mkl.cpp.o
+[ 67%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_gemv_taco.cpp.o
+[ 68%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_gemv_tblis.cpp.o
+[ 68%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_add_bug_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_mm_add_bug_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_mm_add_bug_mkl.cpp:24:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   24 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 69%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_add_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_mm_add_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_mm_add_mkl.cpp:24:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   24 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 69%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_add_stardust.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_mm_add_stardust.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_mm_add_stardust.cpp:24:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   24 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 70%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_add_taco.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_mm_add_taco.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_mm_add_taco.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 70%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_blas.cpp.o
+[ 70%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_gsl.cpp.o
+[ 72%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_taco.cpp.o
+[ 72%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_mm_tblis.cpp.o
+[ 73%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_plus3_gsl_tensor.cpp.o
+[ 73%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_plus3_taco.cpp.o
+[ 74%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_plus3_tblis.cpp.o
+[ 74%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_saxpy_blas.cpp.o
+[ 75%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_saxpy_gsl.cpp.o
+[ 75%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_saxpy_taco.cpp.o
+[ 75%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_saxpy_tblis.cpp.o
+[ 77%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_blas.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_blas.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_blas.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 77%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_cblas_dot.cpp.o
+[ 78%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_cblas_gemv.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_dot.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_dot.cpp:17:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   17 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_gemv.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_gemv.cpp:17:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   17 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 78%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_cblas_varySparsity.cpp.o
+[ 79%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_varySparsity.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 79%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl_dot.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_dot.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_dot.cpp:18:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   18 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 79%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl_dot_varySparsity.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_dot_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_dot_varySparsity.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 81%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl_gemv.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_gemv.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_gemv.cpp:18:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   18 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 81%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl_gemv_varySparsity.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_gemv_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_gemv_varySparsity.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 82%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl_varySparsity.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_gsl_varySparsity.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 82%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_mkl.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_gemv.cpp.o
+[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_gemv_varySparsity.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv.cpp:18:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   18 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv_varySparsity.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_varySparsity.cpp.o
+[ 84%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_taco.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_varySparsity.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_taco.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_taco.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 84%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_taco_varySparsity.cpp.o
+[ 86%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_tblis.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_taco_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_taco_varySparsity.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_tblis.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_tblis.cpp:19:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   19 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 86%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_tblis_varySparsity.cpp.o
+[ 87%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_varySparsity_cblas_dot.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_tblis_varySparsity.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_tblis_varySparsity.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_cblas_dot.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_cblas_dot.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 87%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_varySparsity_cblas_gemv.cpp.o
+[ 88%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_varySparsity_mkl_dot.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_cblas_gemv.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_cblas_gemv.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_mkl_dot.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_sddmm_varySparsity_mkl_dot.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 88%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sgemm_blas.cpp.o
+[ 88%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sgemm_gsl.cpp.o
+[ 89%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sgemm_taco.cpp.o
+[ 89%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sgemm_tblis.cpp.o
+[ 91%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_spmv_cuda.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_spmv_cuda.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_spmv_cuda.cpp:16:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   16 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 91%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_spmv_mkl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_spmv_mkl.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_spmv_mkl.cpp:15:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   15 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 92%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_spmv_stardust.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_spmv_stardust.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_spmv_stardust.cpp:17:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   17 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 92%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_spmv_taco.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_spmv_taco.cpp: In function 'std::string exec(const char*)':
+/mosaic-artifact/mosaic/bench/bench_spmv_taco.cpp:15:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
+   15 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+      |                                            ^
+[0m[ 92%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_symmgemv_blas.cpp.o
+[ 93%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_symmgemv_gsl.cpp.o
+[ 93%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_symmgemv_mkl.cpp.o
+[ 94%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_symmgemv_taco.cpp.o
+[ 94%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_symmgemv_tblis.cpp.o
+[ 96%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttm_taco.cpp.o
+[ 96%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttm_tblis.cpp.o
+[ 96%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttv_blas.cpp.o
+[ 97%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttv_gsl.cpp.o
+[ 97%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttv_mkl.cpp.o
+[ 98%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttv_taco.cpp.o
+[ 98%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_ttv_tblis.cpp.o
+[100%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_unfused_saxpy.cpp.o
+[100%] Linking CXX executable ../bin/taco-bench
+[100%] Built target taco-bench
+[  1%] Building CXX object test/CMakeFiles/taco-gtest.dir/gtest/gtest-all.cc.o
+[ 66%] Built target taco
+[ 66%] Linking CXX static library ../lib/libtaco-gtest.a
+[ 66%] Built target taco-gtest
+[ 67%] Building CXX object test/CMakeFiles/taco-test.dir/test-accelerate-notation.cpp.o
+[ 67%] Building CXX object test/CMakeFiles/taco-test.dir/expr_factory.cpp.o
+[ 67%] Building CXX object test/CMakeFiles/taco-test.dir/test-interface.cpp.o
+[ 69%] Building CXX object test/CMakeFiles/taco-test.dir/test-iteration_algebra.cpp.o
+[ 69%] Building CXX object test/CMakeFiles/taco-test.dir/test-typedcomponent-memory.cpp.o
+[ 71%] Building CXX object test/CMakeFiles/taco-test.dir/test.cpp.o
+[ 71%] Building CXX object test/CMakeFiles/taco-test.dir/test_properties.cpp.o
+[ 71%] Building CXX object test/CMakeFiles/taco-test.dir/test_tensors.cpp.o
+[ 73%] Building CXX object test/CMakeFiles/taco-test.dir/tests-api.cpp.o
+[ 73%] Building CXX object test/CMakeFiles/taco-test.dir/tests-copyprop.cpp.o
+[ 75%] Building CXX object test/CMakeFiles/taco-test.dir/tests-equivalent-expressions.cpp.o
+[ 75%] Building CXX object test/CMakeFiles/taco-test.dir/tests-error.cpp.o
+[ 77%] Building CXX object test/CMakeFiles/taco-test.dir/tests-expr-reduction.cpp.o
+[ 77%] Building CXX object test/CMakeFiles/taco-test.dir/tests-expr.cpp.o
+[ 77%] Building CXX object test/CMakeFiles/taco-test.dir/tests-expr_storage.cpp.o
+[ 79%] Building CXX object test/CMakeFiles/taco-test.dir/tests-format-mm-permute.cpp.o
+[ 79%] Building CXX object test/CMakeFiles/taco-test.dir/tests-format.cpp.o
+[ 81%] Building CXX object test/CMakeFiles/taco-test.dir/tests-index.cpp.o
+[ 81%] Building CXX object test/CMakeFiles/taco-test.dir/tests-index_notation.cpp.o
+[ 83%] Building CXX object test/CMakeFiles/taco-test.dir/tests-indexexpr.cpp.o
+[ 83%] Building CXX object test/CMakeFiles/taco-test.dir/tests-indexstmt.cpp.o
+[ 84%] Building CXX object test/CMakeFiles/taco-test.dir/tests-interface-schedular.cpp.o
+[ 84%] Building CXX object test/CMakeFiles/taco-test.dir/tests-io.cpp.o
+[ 84%] Building CXX object test/CMakeFiles/taco-test.dir/tests-lower.cpp.o
+[ 86%] Building CXX object test/CMakeFiles/taco-test.dir/tests-merge_lattice.cpp.o
+[ 86%] Building CXX object test/CMakeFiles/taco-test.dir/tests-parafac.cpp.o
+[ 88%] Building CXX object test/CMakeFiles/taco-test.dir/tests-qcd.cpp.o
+[ 88%] Building CXX object test/CMakeFiles/taco-test.dir/tests-regression.cpp.o
+[ 90%] Building CXX object test/CMakeFiles/taco-test.dir/tests-schedule-parser.cpp.o
+[ 90%] Building CXX object test/CMakeFiles/taco-test.dir/tests-scheduling-eval.cpp.o
+[ 90%] Building CXX object test/CMakeFiles/taco-test.dir/tests-scheduling.cpp.o
+[ 92%] Building CXX object test/CMakeFiles/taco-test.dir/tests-storage.cpp.o
+[ 92%] Building CXX object test/CMakeFiles/taco-test.dir/tests-storage_alloc.cpp.o
+[ 94%] Building CXX object test/CMakeFiles/taco-test.dir/tests-tensor.cpp.o
+[ 94%] Building CXX object test/CMakeFiles/taco-test.dir/tests-tensor_types.cpp.o
+[ 96%] Building CXX object test/CMakeFiles/taco-test.dir/tests-transformation.cpp.o
+[ 96%] Building CXX object test/CMakeFiles/taco-test.dir/tests-transpose.cpp.o
+[ 96%] Building CXX object test/CMakeFiles/taco-test.dir/tests-type.cpp.o
+[ 98%] Building CXX object test/CMakeFiles/taco-test.dir/tests-windowing.cpp.o
+[ 98%] Building CXX object test/CMakeFiles/taco-test.dir/tests-workspaces.cpp.o
+[100%] Linking CXX executable ../bin/taco-test
+[100%] Built target taco-test
+ ---> Removed intermediate container acba4d9c84b4
+ ---> 9d2d197a35cb
+Successfully built 9d2d197a35cb
+Successfully tagged mosaic-artifact:latest
