@@ -44,7 +44,7 @@ We provide a list of external functions that can be downloaded on a CPU and whic
 
 We provide a list of known issues. Please note that this list may be not comprehensive and is based on our experience. The authors are not experts on these external systems.
 
-CBLAS, MLK, GSL, have already been added for convenience. 
+CBLAS, MLK, GSL have already been added for convenience. 
 
 
 | Library | Known Issues | Download Instructions | Time Taken to Complete |
