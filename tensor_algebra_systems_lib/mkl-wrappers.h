@@ -1,8 +1,3 @@
-#ifndef MKL_WRAPPERS_H
-#define MKL_WRAPPERS_H
-
-#include "mkl.h"
-
 void sgemv_mkl_internal(int dim, float *A, float *x, float *y) {
     MKL_INT n = dim, inc = 1;
     float alpha = 1, beta = 0;
@@ -104,5 +99,3 @@ void wrapper_convert(int m, taco_tensor_t * A, taco_tensor_t * B, float * C){
     printf("out\n");
     free(CSR_A->indices[1][0]);
 }
-
-#endif

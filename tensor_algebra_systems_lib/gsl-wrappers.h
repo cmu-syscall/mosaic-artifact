@@ -1,8 +1,3 @@
-#ifndef GSL_WRAPPERS_H
-#define GSL_WRAPPERS_H
-#include <gsl/gsl_blas.h>
-#include <stdio.h>
-
 void set_gsl_float_data(gsl_vector_float * vec, float * data){
     vec->data = data;
  }
@@ -15,4 +10,3 @@ void set_gsl_float_data(gsl_vector_float * vec, float * data){
      }
      printf("next\\n");
  }
-#endif

@@ -2,7 +2,7 @@ DEPRECATED: The legacy builder is deprecated and will be removed in a future rel
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
 
-Sending build context to Docker daemon  11.99MB
+Sending build context to Docker daemon  11.98MB
 Step 1/22 : FROM docker.io/ubuntu:26.04
  ---> 6a06111c3b0a
 Step 2/22 : LABEL description="mosaic-artifact"
@@ -48,13 +48,13 @@ Step 15/22 : SHELL ["/bin/bash", "-o", "pipefail", "-c"]
  ---> Using cache
  ---> bee55da158e9
 Step 16/22 : COPY . /mosaic-artifact
- ---> d1bac24a5193
+ ---> 2c4246f4da16
 Step 17/22 : RUN mkdir -p /temp /mosaic-artifact/tensor_algebra_systems_src
- ---> Running in a1f257f94703
- ---> Removed intermediate container a1f257f94703
- ---> f784b65826e9
+ ---> Running in 07af4e133396
+ ---> Removed intermediate container 07af4e133396
+ ---> c2c9c0ffe709
 Step 18/22 : RUN source /mosaic-artifact/scripts/mosaic_env_var.sh &&     mkdir -p "$TENSOR_ALGEBRA_SRC" "$TENSOR_ALGEBRA_LIB" &&     env -u LIB_PATH bash -e /mosaic-artifact/scripts/tblis_download.sh
- ---> Running in 95f8f52986d8
+ ---> Running in 203ca13c794f
 [91mCloning into 'tblis'...
 [0m[91mNote: switching to 'd5c9100565afa215ad28c02e2b07860d3698cb3a'.
 
@@ -1056,18 +1056,18 @@ more information, such as the ld(1) and ld.so(8) manual pages.
  /usr/bin/install -c -m 644 src/util/basic_types.h src/util/configs.h src/util/macros.h src/util/thread.h '/mosaic-artifact/tensor_algebra_systems_lib/tblis/include/tblis/util'
 make[2]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
 make[1]: Leaving directory '/mosaic-artifact/tensor_algebra_systems_src/tblis'
- ---> Removed intermediate container 95f8f52986d8
- ---> 6eb81a212a15
+ ---> Removed intermediate container 203ca13c794f
+ ---> 8c12cfb3e10f
 Step 19/22 : RUN python3 -c 'import numpy, scipy, pandas, matplotlib, z3'
- ---> Running in 10e8c3c5f805
- ---> Removed intermediate container 10e8c3c5f805
- ---> 7b181c824081
+ ---> Running in 56a19e4e1122
+ ---> Removed intermediate container 56a19e4e1122
+ ---> 5a1d2721fdf2
 Step 20/22 : RUN echo "source /mosaic-artifact/scripts/mosaic_env_var.sh" >> /root/.bashrc
- ---> Running in 6e0bb9085302
- ---> Removed intermediate container 6e0bb9085302
- ---> 71abd77bf354
+ ---> Running in 8990ddfcec6a
+ ---> Removed intermediate container 8990ddfcec6a
+ ---> dd7b5bc805a7
 Step 21/22 : RUN cmake -S /mosaic-artifact/mosaic -B /mosaic-artifact/mosaic/build     -DCMAKE_BUILD_TYPE=Release     -DCMAKE_POLICY_VERSION_MINIMUM=3.10     -DGIT_SUBMODULE=OFF     -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON     -DBENCHMARK_ENABLE_TESTING=OFF
- ---> Running in 46804b1d8abf
+ ---> Running in 93691ab229a9
 -- The C compiler identification is GNU 13.4.0
 -- The CXX compiler identification is GNU 13.4.0
 -- Detecting C compiler ABI info
@@ -1132,19 +1132,19 @@ Step 21/22 : RUN cmake -S /mosaic-artifact/mosaic -B /mosaic-artifact/mosaic/bui
 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
 -- Found Threads: TRUE
--- Configuring done (6.7s)
+-- Configuring done (6.8s)
 -- Generating done (0.0s)
+-- Build files have been written to: /mosaic-artifact/mosaic/build
 [91mCMake Warning:
   Manually-specified variables were not used by the project:
 
     GIT_SUBMODULE
 
 
-[0m-- Build files have been written to: /mosaic-artifact/mosaic/build
- ---> Removed intermediate container 46804b1d8abf
- ---> 0020b73c267a
+[0m ---> Removed intermediate container 93691ab229a9
+ ---> 97b8da38bf6a
 Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench taco-test --parallel "${BUILD_JOBS}"
- ---> Running in acba4d9c84b4
+ ---> Running in 53a78a7f7257
 [  0%] Building CXX object bench/benchmark/src/CMakeFiles/benchmark.dir/benchmark.cc.o
 [  0%] Building CXX object src/CMakeFiles/taco.dir/cuda.cpp.o
 [  0%] Building CXX object src/CMakeFiles/taco.dir/error.cpp.o
@@ -1259,6 +1259,7 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
 [ 31%] Building CXX object src/CMakeFiles/taco.dir/index_notation/schedule.cpp.o
 [ 32%] Building CXX object src/CMakeFiles/taco.dir/index_notation/tensor_operator.cpp.o
 [ 32%] Building CXX object src/CMakeFiles/taco.dir/index_notation/transformations.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/taco.dir/ir/ir.cpp.o
 [91m/mosaic-artifact/mosaic/src/index_notation/transformations.cpp: In member function 'virtual void taco::SetAssembleStrategy::apply(taco::IndexStmt, std::string*) const::InlineTemporaries::visit(const taco::AssignmentNode*)':
 /mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1657:21: warning: possibly dangling reference to a temporary [-Wdangling-reference]
  1657 |         const auto& oldIndices =
@@ -1272,8 +1273,7 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
 /mosaic-artifact/mosaic/src/index_notation/transformations.cpp:1666:59: note: the temporary was destroyed at the end of the full expression 'taco::Assignment::getLhs() const().taco::Access::getIndexVars()'
  1666 |             tmpUse[lhsTensor].second.getLhs().getIndexVars();
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
-[0m[ 32%] Building CXX object src/CMakeFiles/taco.dir/ir/ir.cpp.o
-[ 34%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_generators.cpp.o
+[0m[ 34%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_generators.cpp.o
 [ 34%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_printer.cpp.o
 [ 35%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_rewriter.cpp.o
 [ 35%] Building CXX object src/CMakeFiles/taco.dir/ir/ir_verifier.cpp.o
@@ -1386,12 +1386,12 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
    18 | static std::string exec(const char* cmd) {
       |                    ^~~~
 [0m[ 62%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_gsl.cpp.o
+[ 62%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_mkl.cpp.o
 [91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
-[0m[ 62%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_blockedSparse4T_mkl.cpp.o
-[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp: At global scope:
+[0m[91m/mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp: At global scope:
 /mosaic-artifact/mosaic/bench/bench_blockedSparse4T_gsl.cpp:19:20: warning: 'std::string exec(const char*)' defined but not used [-Wunused-function]
    19 | static std::string exec(const char* cmd) {
       |                    ^~~~
@@ -1477,12 +1477,12 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
    17 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
 [0m[ 78%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_cblas_varySparsity.cpp.o
-[ 79%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl.cpp.o
 [91m/mosaic-artifact/mosaic/bench/bench_sddmm_cblas_varySparsity.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_cblas_varySparsity.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
-[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl.cpp: In function 'std::string exec(const char*)':
+[0m[ 79%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_gsl.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_gsl.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_gsl.cpp:22:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    22 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
@@ -1517,22 +1517,22 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
    20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
 [0m[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_gemv.cpp.o
-[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_gemv_varySparsity.cpp.o
 [91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv.cpp:18:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    18 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
-[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv_varySparsity.cpp: In function 'std::string exec(const char*)':
+[0m[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_gemv_varySparsity.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv_varySparsity.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_mkl_gemv_varySparsity.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
 [0m[ 83%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_mkl_varySparsity.cpp.o
-[ 84%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_taco.cpp.o
 [91m/mosaic-artifact/mosaic/bench/bench_sddmm_mkl_varySparsity.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_mkl_varySparsity.cpp:21:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    21 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
-[0m[91m/mosaic-artifact/mosaic/bench/bench_sddmm_taco.cpp: In function 'std::string exec(const char*)':
+[0m[ 84%] Building CXX object bench/CMakeFiles/taco-bench.dir/bench_sddmm_taco.cpp.o
+[91m/mosaic-artifact/mosaic/bench/bench_sddmm_taco.cpp: In function 'std::string exec(const char*)':
 /mosaic-artifact/mosaic/bench/bench_sddmm_taco.cpp:20:44: warning: ignoring attributes on template argument 'int (*)(FILE*)' [-Wignored-attributes]
    20 |     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
       |                                            ^
@@ -1651,7 +1651,7 @@ Step 22/22 : RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench
 [ 98%] Building CXX object test/CMakeFiles/taco-test.dir/tests-workspaces.cpp.o
 [100%] Linking CXX executable ../bin/taco-test
 [100%] Built target taco-test
- ---> Removed intermediate container acba4d9c84b4
- ---> 9d2d197a35cb
-Successfully built 9d2d197a35cb
+ ---> Removed intermediate container 53a78a7f7257
+ ---> e947e4a40cd2
+Successfully built e947e4a40cd2
 Successfully tagged mosaic-artifact:latest
