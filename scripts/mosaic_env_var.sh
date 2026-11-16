@@ -30,12 +30,13 @@ case "${1:-blas}" in
     export DYNAMIC_LIB_FILES="-Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl"
     ;;
   gsl|gemv_gsl)
-    export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/include"
-    export LIB_PATH=" -L$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/lib -Wl,-rpath,$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/lib"
+    export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tensor/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/include"
+    export LIB_PATH=" -L$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tensor/lib -Wl,-rpath,$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tensor/lib -L$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/lib -Wl,-rpath,$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/lib"
     export INCLUDE_HEADERS='#include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
+#include <tensor/tensor_float.h>
 #include "gsl-wrappers.h"'
-    export DYNAMIC_LIB_FILES="-lgsl -lgslcblas -lm"
+    export DYNAMIC_LIB_FILES="-ltensor -lgsl -lgslcblas -lm"
     ;;
   cuda)
     export INCLUDE_PATH=" -I/usr/local/cuda/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"

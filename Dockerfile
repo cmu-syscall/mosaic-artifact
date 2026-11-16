@@ -25,6 +25,14 @@ RUN mkdir -p /temp /mosaic-artifact/tensor_algebra_systems_src
 RUN source /mosaic-artifact/scripts/mosaic_env_var.sh && \
     mkdir -p "$TENSOR_ALGEBRA_SRC" "$TENSOR_ALGEBRA_LIB" && \
     env -u LIB_PATH bash -e /mosaic-artifact/scripts/tblis_download.sh
+RUN git clone https://github.com/zhtvk/tensor.git /tmp/tensor-extension && \
+    mkdir -p /tmp/tensor-extension/build && \
+    cd /tmp/tensor-extension/build && \
+    ../configure \
+      --prefix=/mosaic-artifact/tensor_algebra_systems_lib/tensor && \
+    make -j"${BUILD_JOBS}" && \
+    make install && \
+    test -f /mosaic-artifact/tensor_algebra_systems_lib/tensor/include/tensor/tensor_float.h
 RUN python3 -c 'import numpy, scipy, pandas, matplotlib, z3'
 RUN echo "source /mosaic-artifact/scripts/mosaic_env_var.sh" >> /root/.bashrc
 RUN cmake -S /mosaic-artifact/mosaic -B /mosaic-artifact/mosaic/build \
