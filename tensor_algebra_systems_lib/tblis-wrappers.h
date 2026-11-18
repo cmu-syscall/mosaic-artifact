@@ -33,6 +33,3 @@ free(t->len);
 free(t->stride);
 }
 
-void tblis_set_tensor_scalar_s(tblis_tensor *t, float scalar){
-    tblis_init_scalar_s(&t->scalar, scalar);
-}
