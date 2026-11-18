@@ -1,5 +1,5 @@
 #!/bin/bash
-systems=("blas" "gsl" "tblis" "taco" "mkl")
+systems=("blas" "gsl" "tblis" "taco" "mkl" "cublas")
 
 for i in "${systems[@]}"
 do

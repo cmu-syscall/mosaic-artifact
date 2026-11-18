@@ -1,4 +1,5 @@
-FROM docker.io/ubuntu:26.04
+# Includes CUDA headers and cuBLAS development/runtime libraries at /usr/local/cuda.
+FROM docker.io/nvidia/cuda:12.6.3-devel-ubuntu24.04
 LABEL description="mosaic-artifact"
 
 ENV DEBIAN_FRONTEND=noninteractive

@@ -35,6 +35,27 @@ The following instructions only apply if you are not working on our AWS machine.
 TBLIS is built during `docker build` by `scripts/tblis_download.sh` and installed
 under `/mosaic-artifact/tensor_algebra_systems_lib/tblis`.
 
+## Running cuBLAS
+
+The image includes CUDA 12.6.3 and the cuBLAS headers and libraries. The host
+needs a compatible NVIDIA driver and the
+[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+configured for Docker. Start the container with GPU access:
+
+```bash
+docker run --rm -it --gpus all mosaic-artifact bash
+```
+
+Inside the container, select the cuBLAS provider before launching code that
+uses cuBLAS:
+
+```bash
+source /mosaic-artifact/scripts/mosaic_env_var.sh cublas
+```
+
+Building the image does not require a GPU. Running cuBLAS does; the container
+uses the host's NVIDIA driver.
+
 ## Adding Additional Libraries
 ### Downlaoding CPU External Functions
 
@@ -154,7 +175,7 @@ source scripts/mosaic_env_var.sh blas
 "$PATH_TO_MOSAIC_ARTIFACT/mosaic/build/bin/taco-bench" --benchmark_filter='^bench_gemv_blas/'
 ```
 
-Supported selections are `blas` (also `openblas`), `tblis`, `mkl`, `gsl`, `cuda`,
+Supported selections are `blas` (also `openblas`), `tblis`, `mkl`, `gsl`, `cublas`, `cuda`,
 `taco`, and `stardust`. Benchmark variants such as `dot_mkl`, `gemv_gsl`,
 `bug_mkl`, and `gemv_blas` select the corresponding provider automatically.
 Each selection resets `INCLUDE_PATH`, `LIB_PATH`, `DYNAMIC_LIB_FILES`, and
