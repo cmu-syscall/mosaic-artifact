@@ -43,10 +43,6 @@ for backend in taco tblis mkl gsl blas; do
         > "$out/legacy/$backend.log" 2>&1
 done
 
-source "$root/scripts/mosaic_env_var.sh" taco
-"$root/mosaic/build/bin/taco-test" --gtest_filter='scheduleConstants.*:acceleratorMatches.*:preciseTensorMatching.*:LibraryMatchCandidates.*:scheduleLowering.*:interfaceArguments.*' \
-    > "$out/compiler-tests.txt" 2>&1
-
 python3 - "$out" <<'PY'
 import json
 import pathlib

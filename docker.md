@@ -133,7 +133,7 @@ This uses the ordinary Make run/draw workflow: six synthetic kernels across four
 CPU configurations, three Matrix Market cases, and a dimension/density sweep
 with folding disabled. It also runs the five original GEMV benchmarks at dimension
 250. It checks JSON timing rows, generated C, plots, and actual
-dense GEMM library bindings, and runs the focused existing compiler regressions.
+dense GEMM library bindings.
 It is not a comprehensive numerical or performance validation.
 
 The pre-existing figure benchmarks are also built. Their shell scripts' systems

@@ -511,13 +511,9 @@ REPETITIONS=2, and check for both a library-bound JSON label and a successful
 run before increasing sizes. CPU/header checks are not evidence of GPU
 correctness or performance. Keep GPU validation logs with the source revision.
 
-The permanent compiler regressions can be run without external libraries:
-
-```sh
-cmake --build mosaic/build --target taco-test --parallel 4
-INCLUDE_HEADERS='' INCLUDE_PATH='' LIB_PATH='' DYNAMIC_LIB_FILES='' \
-  mosaic/build/bin/taco-test --gtest_filter='scheduleConstants.*:acceleratorMatches.*'
-```
+Custom regression checks used during development are retained locally and are
+not included in these branches. Historical validation results below describe
+the checks performed at the time.
 
 ## Verification (October 30, 2026)
 
