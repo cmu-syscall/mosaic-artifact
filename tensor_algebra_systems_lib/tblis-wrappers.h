@@ -1,8 +1,8 @@
-// float tblis_vector_dot_transfer(const tblis_comm* comm, const tblis_config* cfg, 
-//                     const tblis_vector* A, const tblis_vector* B, 
-//                     tblis_scalar* result){ 
-//     tblis_vector_dot(comm, cfg, A, B, result); 
-//     return result->data.s; } 
+float tblis_vector_dot_transfer(const tblis_comm* comm, const tblis_config* cfg, 
+                    const tblis_vector* A, const tblis_vector* B, 
+                    tblis_scalar* result){ 
+    tblis_vector_dot(comm, cfg, A, B, result); 
+    return result->data.s; } 
 void tblis_init_tensor_s_helper_row_major(tblis_tensor * t, int * dim, int num_dim, void * data){ 
     len_type * len = malloc(sizeof(len_type)*num_dim); 
         if (!len){  
@@ -32,3 +32,4 @@ void free_tblis_tensor(tblis_tensor * t){
 free(t->len);
 free(t->stride);
 }
+
