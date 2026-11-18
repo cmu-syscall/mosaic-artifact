@@ -37,6 +37,13 @@ case "${1:-blas}" in
 #include "gsl-wrappers.h"'
     export DYNAMIC_LIB_FILES="-lgsl -lgslcblas -lm"
     ;;
+  cublas)
+    export INCLUDE_PATH=" -I/usr/local/cuda/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
+    export LIB_PATH=" -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64"
+    export INCLUDE_HEADERS='#include <cuda_runtime_api.h>
+#include <cublas_v2.h>'
+    export DYNAMIC_LIB_FILES="-lcublas -lcudart"
+    ;;
   cuda)
     export INCLUDE_PATH=" -I/usr/local/cuda/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
     export LIB_PATH=" -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64"
