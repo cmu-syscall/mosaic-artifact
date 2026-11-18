@@ -3,13 +3,35 @@
 
 #include "mkl.h"
 
-void sgemm_mkl_internal(int dim, float * A_vals, float * b_vals, float * d_vals){
+void sgemm_mkl_internal(int rows, int columns, int inner,
+                        const float * A_vals, const float * b_vals, float * d_vals){
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows, columns, inner,
+                1, A_vals, inner, b_vals, columns, 0, d_vals, columns);
+}
 
-    MKL_INT dimA = dim;
-    float alpha = 1;
-    float beta = 0;
+void sgemv_mkl_internal(int rows, int columns, const float * A_vals,
+                        const float * b_vals, float * d_vals){
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, rows, columns,
+                1, A_vals, columns, b_vals, 1, 0, d_vals, 1);
+}
 
-    sgemm("n", "n", &dimA, &dimA, &dimA, &alpha, A_vals, &dimA, b_vals, &dimA, &beta, d_vals, &dimA);
+void mkl_scsrgemv_internal(int rows, taco_tensor_t * A,
+                          const float * b_vals, float * d_vals){
+    int *pos = (int *)A->indices[1][0];
+    if (pos[rows] == 0) {
+        for (int row = 0; row < rows; ++row) d_vals[row] = 0;
+        return;
+    }
+    sparse_matrix_t matrix;
+    struct matrix_descr desc = {0};
+    desc.type = SPARSE_MATRIX_TYPE_GENERAL;
+    sparse_status_t status = mkl_sparse_s_create_csr(&matrix, SPARSE_INDEX_BASE_ZERO,
+        rows, A->dimensions[1], pos, pos + 1, (int *)A->indices[1][1], (float *)A->vals);
+    if (status != SPARSE_STATUS_SUCCESS) abort();
+    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1, matrix, desc,
+                              b_vals, 0, d_vals);
+    mkl_sparse_destroy(matrix);
+    if (status != SPARSE_STATUS_SUCCESS) abort();
 }
 
 void ssymv_mkl_internal(int dim, float * A_vals, float * b_vals, float * d_vals){
@@ -83,12 +105,23 @@ taco_tensor_t * convert_coo_to_csr(taco_tensor_t *COO) {
 }
 
 void mkl_sparse_s_mm_internal(int m, taco_tensor_t * A, taco_tensor_t * b, float * c)
-{ sparse_matrix_t A_csr;
- struct matrix_descr desc;
- desc.type = SPARSE_MATRIX_TYPE_GENERAL;
- int*  A_pos = (int*)(A->indices[1][0]); 
- mkl_sparse_s_create_csr(&A_csr, SPARSE_INDEX_BASE_ZERO, m, m, A_pos, A_pos+1, (int*)A->indices[1][1], (float*)A->vals);
- mkl_sparse_s_mm(SPARSE_OPERATION_NON_TRANSPOSE, (float)1, A_csr, desc, SPARSE_LAYOUT_ROW_MAJOR, (float*)b->vals, m, m, 0, c, m);
+{
+    sparse_matrix_t A_csr;
+    struct matrix_descr desc = {0};
+    desc.type = SPARSE_MATRIX_TYPE_GENERAL;
+    int *A_pos = (int *)A->indices[1][0];
+    const int columns = b->dimensions[1];
+    if (A_pos[m] == 0) {
+        for (size_t index = 0; index < (size_t)m * columns; ++index) c[index] = 0;
+        return;
+    }
+    sparse_status_t status = mkl_sparse_s_create_csr(&A_csr, SPARSE_INDEX_BASE_ZERO,
+        m, A->dimensions[1], A_pos, A_pos + 1, (int *)A->indices[1][1], (float *)A->vals);
+    if (status != SPARSE_STATUS_SUCCESS) abort();
+    status = mkl_sparse_s_mm(SPARSE_OPERATION_NON_TRANSPOSE, 1, A_csr, desc,
+        SPARSE_LAYOUT_ROW_MAJOR, (float *)b->vals, columns, columns, 0, c, columns);
+    mkl_sparse_destroy(A_csr);
+    if (status != SPARSE_STATUS_SUCCESS) abort();
 }
 
 void wrapper_convert(int m, taco_tensor_t * A, taco_tensor_t * B, float * C){
