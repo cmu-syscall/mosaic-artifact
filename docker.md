@@ -30,19 +30,10 @@ The following instructions only apply if you are not working on our AWS machine.
 - Download the external functions that can be run on your machine. Refer to the [Downloading External Functions](#downloading-external-functions) section to learn more about which machines each library can be run on and how to download these functions with our provided scripts.
 
 
-## Testing Functionality.
+## Installing TBLIS
 
-
-To test basic functionality, in the ```scripts/bench-scripts/``` directory run:
-
-
-```
- make run-tblis-tests
-```
-
-
-This will download the TBLIS source code in ```tensor_algebra_systems_src```, build from source and place the resultant dynamic libraries in ```tensor_algebra_systems_lib```. It will also run tests that target the TBLIS external library.
-
+TBLIS is built during `docker build` by `scripts/tblis_download.sh` and installed
+under `/mosaic-artifact/tensor_algebra_systems_lib/tblis`.
 
 ## Adding Additional Libraries
 ### Downlaoding CPU External Functions
@@ -53,7 +44,7 @@ We provide a list of external functions that can be downloaded on a CPU and whic
 
 We provide a list of known issues. Please note that this list may be not comprehensive and is based on our experience. The authors are not experts on these external systems.
 
-
+CBLAS, MLK, GSL have already been added for convenience. 
 
 
 | Library | Known Issues | Download Instructions | Time Taken to Complete |
@@ -75,7 +66,7 @@ GSL again, uncomment the ```./atlas_download.sh``` line in
 ### Linking External Functions
 
 
-To link against the systems that were downloaded, you will need to modify the variables in ```scripts/bench-scripts/mosaic_env_var.sh```. An example has already been included for TBLIS.
+To link against the systems that were downloaded, you will need to modify the variables in ```scripts/mosaic_env_var.sh```. The default settings select the system-installed OpenBLAS.
 
 
 - To add the path for the headers of the library, modify the ```INCLUDE_PATH``` variable.
@@ -149,3 +140,27 @@ To plot only these two systems, also change the ```--systems``` argument used in
 
 
 
+
+## Select the kernel environment per test
+
+The configuration contains variable assignments and a `case` statement, with no
+function definitions. Select a provider explicitly for a direct benchmark run:
+
+```bash
+source scripts/mosaic_env_var.sh tblis
+"$PATH_TO_MOSAIC_ARTIFACT/mosaic/build/bin/taco-bench" --benchmark_filter='^bench_gemv_tblis/'
+
+source scripts/mosaic_env_var.sh blas
+"$PATH_TO_MOSAIC_ARTIFACT/mosaic/build/bin/taco-bench" --benchmark_filter='^bench_gemv_blas/'
+```
+
+Supported selections are `blas` (also `openblas`), `tblis`, `mkl`, `gsl`, `cuda`,
+`taco`, and `stardust`. Benchmark variants such as `dot_mkl`, `gemv_gsl`,
+`bug_mkl`, and `gemv_blas` select the corresponding provider automatically.
+Each selection resets `INCLUDE_PATH`, `LIB_PATH`, `DYNAMIC_LIB_FILES`, and
+`INCLUDE_HEADERS`. Edit that provider's assignments for nonstandard installations.
+Libraries must still be installed; CUDA needs its toolkit and GPU setup.
+
+The environment must be selected before launching `taco-bench`: generated-code
+headers are captured when the process starts. For mixed-provider unit tests,
+run separate provider-specific test processes with matching filters.

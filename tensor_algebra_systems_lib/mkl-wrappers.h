@@ -1,7 +1,8 @@
-#ifndef MKL_WRAPPERS_H
-#define MKL_WRAPPERS_H
-
-#include "mkl.h"
+void sgemv_mkl_internal(int dim, float *A, float *x, float *y) {
+    MKL_INT n = dim, inc = 1;
+    float alpha = 1, beta = 0;
+    sgemv("n", &n, &n, &alpha, A, &n, x, &inc, &beta, y, &inc);
+}
 
 void sgemm_mkl_internal(int dim, float * A_vals, float * b_vals, float * d_vals){
 
@@ -51,7 +52,7 @@ void mkl_sparse_s_add_internal(int m, taco_tensor_t * A, taco_tensor_t * B, taco
 taco_tensor_t * convert_coo_to_csr(taco_tensor_t *COO) {
     taco_mode_t mode_types[] = {taco_mode_dense, taco_mode_sparse};
     taco_tensor_t *CSR = init_taco_tensor_t(COO->order, COO->csize, 
-    COO->dimensions, COO->mode_ordering, mode_types);
+    COO->dimensions, COO->mode_ordering, mode_types, COO->fill_value);
 
     int*  COO_pos = (int*)(COO->indices[0][0]);
     int32_t start = COO_pos[0];
@@ -98,5 +99,3 @@ void wrapper_convert(int m, taco_tensor_t * A, taco_tensor_t * B, float * C){
     printf("out\n");
     free(CSR_A->indices[1][0]);
 }
-
-#endif
