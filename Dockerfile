@@ -22,6 +22,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 
 COPY . /mosaic-artifact
+RUN printf '#include "cuda-wrappers.h"\nvoid check(const taco_tensor_t *a, const float *x, float *y, int rows) { cuda_spmv(a, x, y, rows); }\n' | \
+    gcc-13 -std=c99 -shared -fPIC -Wl,-z,defs -x c - \
+      -isystem /usr/local/cuda/include -I/mosaic-artifact/mosaic/include \
+      -I/mosaic-artifact/tensor_algebra_systems_lib -L/usr/local/cuda/lib64 \
+      -lcudart -lcusparse -o /tmp/cusparse-link-check.so && \
+    rm /tmp/cusparse-link-check.so
 RUN mkdir -p /temp /mosaic-artifact/tensor_algebra_systems_src
 RUN source /mosaic-artifact/scripts/mosaic_env_var.sh && \
     mkdir -p "$TENSOR_ALGEBRA_SRC" "$TENSOR_ALGEBRA_LIB" && \
@@ -40,6 +46,7 @@ RUN cmake -S /mosaic-artifact/mosaic -B /mosaic-artifact/mosaic/build \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.10 \
     -DGIT_SUBMODULE=OFF \
+    -DMOSAIC_CUSPARSE_SDDMM=ON \
     -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON \
     -DBENCHMARK_ENABLE_TESTING=OFF
-RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench taco-test --parallel "${BUILD_JOBS}"
+RUN cmake --build /mosaic-artifact/mosaic/build --target taco-bench taco-test taco-bench-sddmm-cusparse --parallel "${BUILD_JOBS}"

@@ -56,6 +56,38 @@ source /mosaic-artifact/scripts/mosaic_env_var.sh cublas
 Building the image does not require a GPU. Running cuBLAS does; the container
 uses the host's NVIDIA driver.
 
+## Running cuSPARSE SpMV
+
+The image includes cuSPARSE and checks that the Mosaic wrapper compiles and
+links during the build. Start the container with `--gpus all` as above. Inside
+the container, run the correctness test and a benchmark case with:
+
+```bash
+cd /mosaic-artifact
+source scripts/mosaic_env_var.sh cusparse
+mosaic/build/bin/taco-test --gtest_filter=interface.cudaSparseGemv
+mosaic/build/bin/taco-bench --benchmark_filter='^bench_spmv_cuda/250/'
+```
+
+`cuda` is an alias for the `cusparse` provider. The benchmark measures the
+complete FP32 CSR matrix–vector multiply, including device allocation and
+host–device transfers on every call.
+
+## Testing cuSPARSE SDDMM across sparsities
+
+In a rebuilt image started with `--gpus all`, run:
+
+```bash
+make -C /mosaic-artifact/scripts/bench-scripts run-sddmm-varsparsity-cusparse
+```
+
+This runs FP32 CSR SDDMM at the eight Figure 16 densities with 2,000 × 2,000
+matrices and writes Google Benchmark JSON to
+`scripts/bench-scripts/sddmm_varSparsity/result/cusparse`. Timings include
+the cuSPARSE call and synchronization. Allocation, transfers, preprocessing,
+and sampled numerical checks run outside the timed region. Native builds
+can enable the dedicated binary with `-DMOSAIC_CUSPARSE_SDDMM=ON`.
+
 ## Adding Additional Libraries
 ### Downlaoding CPU External Functions
 

@@ -32,6 +32,10 @@ run-fig15:
 run-fig16:
 	./sddmm_varSparsity/bench.sh
 
+.PHONY: run-sddmm-varsparsity-cusparse
+run-sddmm-varsparsity-cusparse:
+	bash ./sddmm_varSparsity/bench-cusparse.sh
+
 run-fig17:
 	./blockedSparse_4T_5/bench.sh
 
