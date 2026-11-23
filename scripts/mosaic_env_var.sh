@@ -12,7 +12,9 @@ export INCLUDE_HEADERS=""
 
 case "${1:-blas}" in
   blas|openblas|dot_blas|gemv_blas)
-    export INCLUDE_HEADERS='#include <cblas.h>'
+    export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/mosaic/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
+    export INCLUDE_HEADERS='#include <cblas.h>
+#include "sddmm-blas.h"'
     export DYNAMIC_LIB_FILES="-lopenblas"
     ;;
   tblis)
@@ -26,8 +28,14 @@ case "${1:-blas}" in
     export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/mosaic/include -I/usr/include/mkl -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
     export INCLUDE_HEADERS='#include "taco/taco_tensor_t.h"
 #include <mkl.h>
-#include "mkl-wrappers.h"'
+#include "mkl-wrappers.h"
+#include "sddmm-blas.h"'
     export DYNAMIC_LIB_FILES="-Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl"
+    ;;
+  sampled_gsl)
+    export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/mosaic/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib"
+    export INCLUDE_HEADERS='#include "sddmm-gsl.h"'
+    export DYNAMIC_LIB_FILES="-lgsl -lgslcblas -lm"
     ;;
   gsl|gemv_gsl)
     export INCLUDE_PATH=" -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/tensor/include -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib -I$PATH_TO_MOSAIC_ARTIFACT/tensor_algebra_systems_lib/gsl/include"
@@ -51,7 +59,7 @@ case "${1:-blas}" in
     export INCLUDE_HEADERS='#include "cuda-wrappers.h"'
     export DYNAMIC_LIB_FILES="-lcudart -lcusparse"
     ;;
-  taco)
+  taco|taco_scheduled|optimized|cpu_blocked)
     ;;
   stardust)
     export INCLUDE_HEADERS='#include <time.h>'

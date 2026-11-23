@@ -1,0 +1,13 @@
+list,position,matrix,backend,rows,columns,nnz,inner,median_us,error
+mosaic-paper,1,lp_nug08,sampled_gsl,912,1632,7296,100,425.7804998815118,
+mosaic-paper,1,lp_nug08,mosaic_sampled_gsl,912,1632,7296,100,429.1865002414852,
+mosaic-paper,2,m3plates,sampled_gsl,11107,11107,6639,100,418.7969998383778,
+mosaic-paper,2,m3plates,mosaic_sampled_gsl,11107,11107,6639,100,545.7695001496177,
+mosaic-paper,3,IG5-12,sampled_gsl,2296,2875,46260,100,2671.5644999057986,
+mosaic-paper,3,IG5-12,mosaic_sampled_gsl,2296,2875,46260,100,2686.492999600887,
+mosaic-paper,4,g7jac020sc,sampled_gsl,5850,5850,42568,100,2498.5515005937486,
+mosaic-paper,4,g7jac020sc,mosaic_sampled_gsl,5850,5850,42568,100,2522.1255000360543,
+mosaic-paper,5,gemat1,sampled_gsl,4929,10595,46591,100,2693.295499739179,
+mosaic-paper,5,gemat1,mosaic_sampled_gsl,4929,10595,46591,100,2717.936499720963,
+mosaic-paper,6,mimo28x28_system,sampled_gsl,13251,13251,48737,100,2873.0159997394367,
+mosaic-paper,6,mimo28x28_system,mosaic_sampled_gsl,13251,13251,48737,100,2904.464499806636,

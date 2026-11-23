@@ -15,5 +15,13 @@ git clone https://github.com/MatthewsResearchGroup/tblis.git
 
 cd tblis
 git checkout d5c9100565afa215ad28c02e2b07860d3698cb3a
+# This revision lists expression.hpp twice. GNU install on Ubuntu 24.04
+# rejects installing the same header twice in one invocation.
+# Patch both the Automake source and its generated configure input.
+for makefile in Makefile.am Makefile.in; do
+    awk '!/^[[:space:]]*src\/external\/marray\/marray\/expression.hpp / || !seen++' \
+        "$makefile" > "$makefile.tmp"
+    mv "$makefile.tmp" "$makefile"
+done
 ./configure --prefix=$TENSOR_ALGEBRA_LIB/tblis && make && make install
 

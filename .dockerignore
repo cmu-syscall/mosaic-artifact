@@ -7,3 +7,4 @@
 tensor_algebra_systems_src/
 tensor_algebra_systems_lib/tblis/
 mosaic-benchmarks/data/spdata/
+mosaic-benchmarks/data/suitesparse/

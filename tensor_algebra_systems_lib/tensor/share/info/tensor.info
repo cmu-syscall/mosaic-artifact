@@ -1,0 +1,1469 @@
+This is tensor.info, produced by makeinfo version 7.2 from tensor.texi.
+
+This file documents the Tensor library for multidimensional array
+representation and processing.  It is an extension of GSL--the GNU
+Scientific Library.  *Note (gsl-ref)Top:: for more information about
+GSL.
+
+   Copyright © 2020 Viktor Slavkovikj
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.  A copy of the license is included in
+     the section entitled "GNU Free Documentation License".
+
+INFO-DIR-SECTION Software libraries
+START-INFO-DIR-ENTRY
+
+* Tensor: (tensor). A multidimensional array library.
+
+END-INFO-DIR-ENTRY
+
+
+File: tensor.info,  Node: Top,  Next: Tensor,  Up: (dir)
+
+Tensor 0.1
+**********
+
+This file documents the Tensor library for multidimensional array
+representation and processing.  It is an extension of GSL--the GNU
+Scientific Library.  *Note (gsl-ref)Top:: for more information about
+GSL.
+
+   Copyright © 2020 Viktor Slavkovikj
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.  A copy of the license is included in
+     the section entitled "GNU Free Documentation License".
+
+* Menu:
+
+* Tensor::                      The Tensor library.
+* Concept index::               Topics covered by this manual.
+
+
+File: tensor.info,  Node: Tensor,  Next: Concept index,  Prev: Top,  Up: Top
+
+1 Tensor
+********
+
+A tensor can be defined as a multidimensional array representation.  It
+generalises to higher dimensions the concepts of vectors and matrices,
+which can be described as tensors with dimensions of one and two
+respectively.  A three-dimensional tensor can therefore correspond to a
+set of matrices, however, in general, a tensor can be defined to have
+arbitrary number of dimensions within the constraints of physical
+memory.
+
+   The Tensor library contains types and functions for creating and
+manipulating tensors.  It is an extension of GSL--the GNU Scientific
+Library, which is a collection of numerical routines for scientific
+computing.
+
+* Menu:
+
+* Using the library::           Compiling and linking.
+* Tensor types::                Types of tensors.
+* Tensor allocation::           How to create tensors.
+* Tensor elements access::      How to access individual elements.
+* Tensor initialisation::       Filling a tensor with predefined values.
+* Reading and writing tensors:: Tensor persistence.
+* Tensor views::                A different view on existing data.
+* Tensor operations::           Operations on tensors.
+* Tensor properties::           Basic tensor characteristics.
+* Examples::                    Examples of usage.
+
+
+File: tensor.info,  Node: Using the library,  Next: Tensor types,  Up: Tensor
+
+1.1 Using the library
+=====================
+
+This section describes how to compile and link programs to use the
+Tensor library.  A prerequisite to using Tensor 0.1 in your own programs
+is having an installation of GSL (*note (gsl-ref)Obtaining GSL::)
+available on your system.
+
+* Menu:
+
+* An example program::          A short example.
+* Compiling and linking::       How to compile and link programs.
+* Shared libraries::            Using shared libraries.
+
+
+File: tensor.info,  Node: An example program,  Next: Compiling and linking,  Up: Using the library
+
+1.1.1 An example program
+------------------------
+
+The following short program sums the elements of a tensor and displays
+the result.
+
+#include <stdio.h>
+#include <tensor/tensor.h>
+
+int
+main (void)
+{
+  tensor * t = tensor_alloc (3, 2, 3, 4);
+
+  tensor_set_one (t);
+
+  printf ("Element's sum: %g\n", tensor_sum (t));
+
+  tensor_free (t);
+
+  return 0;
+}
+
+   Since all of the tensor's elements are initialised to one, the sum of
+elements equals their total number, as shown in the output below:
+
+Element's sum: 24
+
+
+File: tensor.info,  Node: Compiling and linking,  Next: Shared libraries,  Prev: An example program,  Up: Using the library
+
+1.1.2 Compiling and linking
+---------------------------
+
+The library header files are installed in their own ‘tensor’ directory.
+Therefore, to compile programs as the one listed in the previous
+subsection (*note (tensor)An example program::) any preprocessor include
+statements have to be provided with the ‘/tensor’ directory prefix, such
+as:
+
+#include <tensor/tensor.h>
+
+   If the directory is not installed on the standard search path of your
+compiler you will also need to provide its location to the preprocessor
+as a command line flag.  The default location of the ‘tensor’ directory
+is ‘/usr/local/include/tensor’.  A typical compilation command for a
+source file ‘example.c’ with the GNU C compiler ‘gcc’ is:
+
+$ gcc -Wall -I/usr/local/include -c example.c
+
+   This results in an object file ‘example.o’.  The default include path
+for ‘gcc’ searches ‘/usr/local/include’ automatically so the ‘-I’ option
+can actually be omitted when Tensor is installed in its default
+location.
+
+   The library is installed as a single file, ‘libtensor.a’.  A shared
+version of the library ‘libtensor.so’ is also installed on systems that
+support shared libraries.  The default location of these files is
+‘/usr/local/lib’.  If this directory is not on the standard search path
+of your linker you will also need to provide its location as a command
+line flag.
+
+   To link against the library you need to specify the Tensor library,
+GSL, and a supporting CBLAS library, which provides standard basic
+linear algebra subroutines.  A suitable CBLAS implementation is provided
+with GSL-in the library ‘libgslcblas.a’, in case your system does not
+provide one.  The following example shows how to link an application
+with the library:
+
+$ gcc -L/usr/local/lib example.o -lgsl -lgslcblas -lm -ltensor
+
+   The default library path for gcc searches ‘/usr/local/lib’
+automatically so the ‘-L’ option can be omitted when Tensor and GSL are
+installed in their default location.  The option ‘-lm’ links with the
+system math library (not needed on MacOS X).
+
+
+File: tensor.info,  Node: Shared libraries,  Prev: Compiling and linking,  Up: Using the library
+
+1.1.3 Shared libraries
+----------------------
+
+To run a program linked with the shared version of the library the
+operating system must be able to locate the corresponding ‘.so’ file at
+runtime.  If the library cannot be found, the following error will
+occur:
+
+$ ./a.out
+./a.out: error while loading shared libraries:
+libtensor.so.0: cannot open shared object file: No such file or directory
+
+   To avoid this error, either modify the system dynamic linker
+configuration (‘/etc/ld.so.conf’ on GNU/Linux systems) or define the
+shell variable ‘LD_LIBRARY_PATH’ to include the directory where the
+library is installed.
+
+   For example, in the Bourne shell (‘/bin/sh’ or ‘/bin/bash’), the
+library search path can be set with the following commands:
+
+$ LD_LIBRARY_PATH=/usr/local/lib
+$ export LD_LIBRARY_PATH
+$ ./example
+
+   To save retyping these commands each session they can be placed in an
+individual or system-wide login file.
+
+   To compile a statically linked version of the program, use the
+‘-static’ flag in ‘gcc’:
+
+$ gcc -static example.o -lgsl -lgslcblas -lm -ltensor
+
+
+File: tensor.info,  Node: Tensor types,  Next: Tensor allocation,  Prev: Using the library,  Up: Tensor
+
+1.2 Tensor types
+================
+
+The ‘tensor’ structure contains six components: ‘dim’, ‘size’, ‘stride’,
+‘data’, ‘block’, and ‘owner’, as listed below.
+
+ -- Type: tensor
+     typedef struct
+     {
+       size_t dim;
+       size_t * size;
+       size_t * stride;
+       double * data;
+       gsl_block * block;
+       int owner;
+     } tensor;
+
+   The number of tensor dimensions is ‘dim’.  The ‘size’ and ‘stride’
+are pointers to arrays that contain the size and stride for each
+individual dimension.  For a given dimension, its size gives the number
+of constituting parts for the dimension.  For example, in a
+two-dimensional tensor, i.e., a matrix, ‘dim’ is 2 and ‘size[0]’ gives
+the number of rows while ‘size[1]’ the number of columns.  The stride
+for a dimension is the step-size between the dimension's constituting
+parts in physical memory, measured in units of the underlying data type.
+It can differ from the corresponding dimension size to allow the use of
+sub-tensors.  The ‘data’ field is a pointer to the memory where the
+elements of the tensor are stored.
+
+   Tensors use blocks (*note (gsl-ref)Blocks::) as single underlying
+type memory storage--the ‘block’ component in the ‘tensor’ structure.
+If the tensor owns the block then the ‘owner’ component is set to one
+and the block will be deallocated when the tensor is freed.  If the
+block is owned by another object then the ‘owner’ field is zero and any
+underlying block will not be freed.
+
+   Tensors support each of the standard data types.  The functions that
+operate on ‘double’ data type have the prefix ‘tensor’, whereas for
+other data types the type is also included in the prefix, e.g.,
+‘tensor_int’ for ‘int’ data type.  Not all functions are applicable to
+every data type.  A full list of available tensor types is given below.
+
+Tensor                               Type
+                                     
+--------------------------------------------------------------------------
+tensor                               double
+                                     
+tensor_float                         float
+                                     
+tensor_long_double                   long double
+                                     
+tensor_int                           int
+                                     
+tensor_uint                          unsigned int
+                                     
+tensor_long                          long
+                                     
+tensor_ulong                         unsigned long
+                                     
+tensor_short                         short
+                                     
+tensor_ushort                        unsigned short
+                                     
+tensor_char                          char
+                                     
+tensor_uchar                         unsigned char
+                                     
+tensor_complex                       complex double
+                                     
+tensor_complex_float                 complex float
+                                     
+tensor_complex_long_double           complex long double
+                                     
+
+   The functions for tensor creation and processing are defined in
+‘tensor.h’.
+
+
+File: tensor.info,  Node: Tensor allocation,  Next: Tensor elements access,  Prev: Tensor types,  Up: Tensor
+
+1.3 Tensor allocation
+=====================
+
+The functions for allocating tensor memory follow the style of malloc
+and free.  They also perform their own error checking.  If there is
+insufficient memory available to allocate a matrix then the functions
+call the GSL error handler (with an error number of ‘GSL_ENOMEM’) in
+addition to returning a null pointer.  Thus if you use the GSL error
+handler to abort your program then it isn’t necessary to check every
+alloc.
+
+ -- Function: tensor * tensor_alloc (const size_t dim, ...)
+
+     This function creates a tensor of dimension ‘dim’, returning a
+     pointer to a newly initialised tensor struct.  The variable
+     argument list ‘...’ should contain the size arguments for each
+     tensor dimension.  A new block is allocated for the elements of the
+     tensor, and stored in the block component of the tensor struct.
+     The block is "owned" by the tensor, and will be deallocated when
+     the tensor is freed.  Requesting zero for ‘dim’ is valid and
+     returns a non-null result.
+
+ -- Function: tensor * tensor_calloc (const size_t dim, ...)
+
+     This function allocates memory for a tensor of dimension ‘dim’,
+     with sizes for each dimension provided in the variable argument
+     list, and initialises all the elements of the tensor to zero.
+
+ -- Function: void tensor_free (tensor * t)
+
+     This function frees a previously allocated tensor ‘t’.  If the
+     tensor was created using ‘tensor_alloc()’ then the block underlying
+     the tensor will also be deallocated.  If the tensor has been
+     created from another object then the memory is still owned by that
+     object and will not be deallocated.
+
+
+File: tensor.info,  Node: Tensor elements access,  Next: Tensor initialisation,  Prev: Tensor allocation,  Up: Tensor
+
+1.4 Tensor elements access
+==========================
+
+The functions for accessing the elements of a tensor use the GSL range
+checking system.  You can turn off range checking by recompiling your
+program with the preprocessor definition ‘GSL_RANGE_CHECK_OFF’.
+
+   Tensor elements are stored in "C-order", i.e., the last index moves
+continuously through memory.  For a tensor ‘t’ of ‘dim’ 3, the element
+accessed at indices ‘i, j, k’ is:
+
+t->data[i * stride[0] + j * stride[1] + k * stride[2]].
+
+ -- Function: double tensor_get (const tensor * t, ...)
+
+     This function returns the element specified by the indices in the
+     variable argument list.  If any of the indices are out of the
+     allowed range for their dimension ‘d’ of ‘0’ to ‘size[d] - 1’, then
+     the error handler is invoked and ‘0’ is returned.
+
+ -- Function: void tensor_set (const tensor * t, const double x, ...)
+
+     This function sets the value of the element of tensor ‘t’ at the
+     indices given in the variable argument list to ‘x’.  If any of the
+     indices are out of the allowed range for their dimension ‘d’ of ‘0’
+     to ‘size[d] - 1’, then the error handler is invoked.
+
+ -- Function: double * tensor_ptr (tensor * t, ...)
+
+ -- Function: const double * tensor_const_ptr (const tensor * t, ...)
+
+     These functions return a pointer to the element of tensor ‘t’ at
+     the indices given in the variable argument list.  If any of the
+     indices are out of the allowed range for their dimension ‘d’ of ‘0’
+     to ‘size[d] - 1’, then the error handler is invoked and a null
+     pointer is returned.
+
+ -- Function: size_t tensor_index (const tensor * t, const size_t i)
+
+     This function returns the index ‘idx’ of the ‘i’-th consecutive
+     element (as in a flat "C-order" layout) of tensor ‘t’ taking into
+     account strides, such that ‘t->data[idx]’ gives the value of the
+     ‘i’-th element of ‘t’.
+
+ -- Function: double * tensor_ptr_idx (tensor * t, const size_t idx)
+
+ -- Function: const double * tensor_const_ptr_idx (const tensor * t,
+          const size_t idx)
+
+     These are convenience functions that return a pointer to the
+     tensor's element at index ‘idx’ (as obtained from ‘tensor_index
+     (const tensor * t, const size_t i)’ function).  An inline version
+     of these functions is used when ‘HAVE_INLINE’ is defined.
+
+
+File: tensor.info,  Node: Tensor initialisation,  Next: Reading and writing tensors,  Prev: Tensor elements access,  Up: Tensor
+
+1.5 Tensor initialisation
+=========================
+
+The functions listed below initialise the elements of a tensor to
+predefined values.
+
+ -- Function: void tensor_set_zero (tensor * t)
+
+     This function sets all tensor ‘t’ elements to zero.
+
+ -- Function: void tensor_set_one (tensor * t)
+
+     This function sets all tensor ‘t’ elements to one.
+
+ -- Function: void tensor_set_all (tensor * t, const double x)
+
+     This function sets all tensor ‘t’ elements to value ‘x’.
+
+   It is possible to initialise a tensor with values drawn from random
+number distributions.  All of the following functions have an input
+argument ‘rng’, which is a pointer to a GSL random number generator
+‘const gsl_rng *’ used for drawing the samples.
+
+ -- Function: void tensor_set_uniform (tensor * t, const gsl_rng * rng)
+
+     This function sets all tensor ‘t’ elements to random numbers drawn
+     from a uniform distribution in the interval ‘[0, 1)’.
+
+ -- Function: void tensor_set_uniform_int (tensor * t, const gsl_rng *
+          rng, unsigned long int max)
+
+     This function sets all tensor ‘t’ elements to random numbers drawn
+     from a uniform distribution in the interval ‘[0, max - 1]’.
+
+ -- Function: void tensor_set_normal (tensor * t, const gsl_rng * rng,
+          double mu, double sigma)
+
+     This function sets all tensor ‘t’ elements to random numbers drawn
+     from a Gaussian distribution with mean ‘mu’ and standard deviation
+     ‘sigma’.
+
+ -- Function: void tensor_set_std_normal (tensor * t, const gsl_rng *
+          rng)
+
+     This function sets all tensor ‘t’ elements to random numbers drawn
+     from a Gaussian distribution with mean ‘0.0’ and standard deviation
+     ‘1.0’.
+
+
+File: tensor.info,  Node: Reading and writing tensors,  Next: Tensor views,  Prev: Tensor initialisation,  Up: Tensor
+
+1.6 Reading and writing tensors
+===============================
+
+ -- Function: int tensor_fread (FILE * stream, tensor * t)
+
+     This function reads into the tensor ‘t’ from the open stream
+     ‘stream’ in binary format.  The tensor ‘t’ must be preallocated
+     with the correct total size since the function uses the size of ‘t’
+     to determine how many bytes to read.  The return value is
+     ‘GSL_SUCCESS’ for success and ‘GSL_EFAILED’ if there was a problem
+     reading from the file.  The data is assumed to have been written in
+     the native binary format on the same architecture.
+
+ -- Function: int tensor_fwrite (FILE * stream, const tensor * t)
+
+     This function writes the elements of the tensor ‘t’ to the stream
+     ‘stream’ in binary format.  The return value is ‘GSL_SUCCESS’ for
+     success and ‘GSL_EFAILED’ if there was a problem writing to the
+     file.  Since the data is written in the native binary format it may
+     not be portable between different architectures.
+
+ -- Function: int tensor_fscanf (FILE * stream, tensor * t)
+
+     This function reads formatted data from the stream ‘stream’ into
+     the tensor ‘t’.  The tensor ‘t’ must be preallocated with the
+     correct total size since the function uses the size of ‘t’ to
+     determine how many numbers to read.  The function returns
+     ‘GSL_SUCCESS’ for success and ‘GSL_EFAILED’ if there was a problem
+     reading from the file.
+
+ -- Function: int tensor_fprintf (FILE * stream, const tensor * t, const
+          char * format)
+
+     This function writes the elements of the tensor ‘t’ line-by-line to
+     the stream ‘stream’ using the format specifier ‘format’, which
+     should be one of the ‘%g’, ‘%e’ or ‘%f’ formats for floating-point
+     numbers and ‘%d’ for integers.  The function returns ‘GSL_SUCCESS’
+     for success and ‘GSL_EFAILED’ if there was a problem writing to the
+     file.
+
+
+File: tensor.info,  Node: Tensor views,  Next: Tensor operations,  Prev: Reading and writing tensors,  Up: Tensor
+
+1.7 Tensor views
+================
+
+Tensor views provide access to whole or part of the data owned by
+another tensor.  Unlike GSL vector and matrix views, tensor views are
+allocated from heap memory as a consequence of the arbitrary dimension
+of tensors.  Therefore, it is the user's responsibility to free the
+bookkeeping memory used by tensor views when the view is no longer
+needed.  There is no separate type for views.  Except of not owning the
+data, as indicated by the ‘owner’ field set to ‘0’, tensor views do not
+differ from ordinary tensors.
+
+ -- Function: tensor * tensor_view (tensor * t, ...)
+
+ -- Function: const tensor * tensor_const_view (const tensor * t, ...)
+
+     These functions return a tensor view of a sub-tensor of tensor ‘t’.
+     The variable argument list should contain triplets of ‘offset,
+     size, step’ for each tensor dimension, where ‘offset’ indicates the
+     number of parts starting from the initial part of the dimension,
+     ‘size’ is the number of parts in the resulting tensor view, and
+     ‘step’ is the step-size for the dimension from the original tensor.
+
+     A convenience macro ‘RANGE (start, end, step)’ defined in ‘range.h’
+     can be used to form a triplet for a dimension in the previous
+     functions.  It accepts a ‘start’ and ‘end’ index for the parts of
+     the original tensor dimension and a step-size.
+
+ -- Function: tensor * tensor_view_array (double * array, const size_t
+          dim, ...)
+
+ -- Function: const tensor * tensor_const_view_array (const double *
+          array, const size_t dim, ...)
+
+     These functions return a tensor view of the array ‘array’.  The
+     variable argument list should contain the sizes for each dimension.
+     The original array should not be deallocated while the view is
+     still in use.
+
+   The following functions provide conversions between GSL vector and
+matrix to tensor and vice-versa for tensors of dimensions one and two.
+
+ -- Function: tensor * tensor_view_vector (gsl_vector * vector)
+
+ -- Function: const tensor * tensor_const_view_vector (const gsl_vector
+          * vector)
+
+     These functions return a tensor view from a GSL vector ‘vector’.
+
+ -- Function: gsl_vector_view gsl_vector_view_tensor (tensor * t)
+
+ -- Function: gsl_vector_const_view gsl_vector_const_view_tensor (const
+          tensor * t)
+
+     These functions return a GSL vector view from a tensor ‘t’.
+
+ -- Function: tensor * tensor_view_matrix (gsl_matrix * matrix)
+
+ -- Function: const tensor * tensor_const_view_matrix (const gsl_matrix
+          * matrix)
+
+     These functions return a tensor view from a GSL matrix ‘matrix’.
+
+ -- Function: gsl_matrix_view gsl_matrix_view_tensor (tensor * t)
+
+ -- Function: gsl_matrix_const_view gsl_matrix_const_view_tensor (const
+          tensor * t)
+
+     These functions return a GSL matrix view from a tensor ‘t’.
+
+
+File: tensor.info,  Node: Tensor operations,  Next: Tensor properties,  Prev: Tensor views,  Up: Tensor
+
+1.8 Tensor operations
+=====================
+
+The operations supported by tensors are divided in the groups listed
+below.
+
+* Menu:
+
+* Basic operators::             Copy, assign, swap, adjoin.
+* Shape operators::             Operators that change dimension and or size.
+* Arithmetic operators::        Arithmetic functions.
+* Trigonometric operators::     Trigonometric functions.
+* Exponential operators::       Exponential functions.
+* Logarithmic operators::       Logarithmic functions.
+* Statistics operators::        Statistical functions.
+* Rounding operators::          Rounding and truncation functions.
+* Logical operators::           Logical functions.
+* Sorting operators::           Sorting functions.
+
+
+File: tensor.info,  Node: Basic operators,  Next: Shape operators,  Up: Tensor operations
+
+1.8.1 Basic operators
+---------------------
+
+ -- Function: tensor * tensor_copy (const tensor * t_in)
+
+     This function returns a deep copy of tensor ‘t_in’.  After the
+     operation both tensor elements are independent, i.e., changes to
+     one of the tensors do not reflect in the other.  The copied tensor
+     is contiguous even if ‘t_in’ is discontiguous.
+
+ -- Function: int tensor_assign (tensor * t1, const tensor * t2)
+
+     This function assigns all elements from tensor ‘t2’ to tensor ‘t1’.
+     After the operation, tensor ‘t1’'s elements have equal values to
+     those of tensor ‘t2’.  The function returns ‘GSL_SUCCESS’ if the
+     operation was successful, or an error ‘GSL_EBADLEN’ if the total
+     number of elements differs between the two tensors.
+
+ -- Function: int tensor_swap (tensor * t1, tensor * t2)
+
+     This function swaps all elements between tensors ‘t1’ and ‘t2’.
+
+ -- Function: void tensor_adjoin (tensor * t)
+
+     This function adjoins a tensor ‘t’, i.e., it makes its underlying
+     memory contiguous.  The function has no effect if ‘t’ had already
+     been a contiguous tensor.
+
+
+File: tensor.info,  Node: Shape operators,  Next: Arithmetic operators,  Prev: Basic operators,  Up: Tensor operations
+
+1.8.2 Shape operators
+---------------------
+
+The following functions manipulate the shape (dimensions and/or sizes)
+of tensors.
+
+ -- Function: int tensor_morph (tensor * t, ...)
+
+     This function changes the sizes of tensor ‘t’ to new sizes provided
+     in the variable argument list.  The function returns ‘GSL_SUCCESS’
+     if the operation was successful, or ‘GSL_EINVAL’ if the total
+     number of elements with the new sizes does not equal the one before
+     the operation.  The tensor is adjoined if it was not contiguous.
+
+ -- Function: void tensor_deflate (tensor * t)
+
+     This function removes dimensions of size ‘1’ from tensor ‘t’.
+
+ -- Function: int tensor_inflate (tensor * t, const size_t didx)
+
+     This function adds a dimension of size ‘1’ to tensor ‘t’ at
+     dimension ‘didx’.  The function returns ‘GSL_SUCCESS’ if the
+     operation was successful, or ‘GSL_EINVAL’ if ‘didx’ is outside the
+     range ‘[0, dim]’, where ‘dim’ is the dimension of ‘t’.
+
+ -- Function: tensor * tensor_concat (const size_t didx, const size_t n,
+          ...)
+
+     This function returns a tensor which is a concatenation along the
+     dimension ‘didx’ of the ‘n’ tensors provided in the variable
+     argument list.  The sizes of the input tensors have to match,
+     except at the concatenating dimension.
+
+
+File: tensor.info,  Node: Arithmetic operators,  Next: Trigonometric operators,  Prev: Shape operators,  Up: Tensor operations
+
+1.8.3 Arithmetic operators
+--------------------------
+
+ -- Function: void tensor_abs (tensor * t)
+
+     This function works inplace on tensor ‘t’ to provide the absolute
+     value of each tensor element.  In case ‘t’ is complex, then the
+     magnitude of each element is stored in the real part and the
+     imaginary part is set to ‘0’.
+
+ -- Function: void tensor_neg (tensor * t)
+
+     This function works inplace on tensor ‘t’ to provide the negative
+     value of each tensor element.  If the tensor contains complex data
+     types, it provides the complex negative.
+
+ -- Function: void tensor_inv (tensor * t)
+
+     This function works inplace on tensor ‘t’.  It calculates the
+     reciprocal value of each element if the tensor is of a real data
+     type, or the complex inverse for complex data types.
+
+ -- Function: int tensor_add (tensor * t1, const tensor * t2)
+
+     This function adds the elements of tensor ‘t2’ to the elements of
+     tensor ‘t1’.  The result ‘t1 = t1 + t2’ is stored in ‘t1’ and ‘t2’
+     remains unchanged.  The two tensors must have matching sizes.
+
+ -- Function: int tensor_sub (tensor * t1, const tensor * t2)
+
+     This function subtracts the elements of tensor ‘t2’ from the
+     elements of tensor ‘t1’.  The result ‘t1 = t1 - t2’ is stored in
+     ‘t1’ and ‘t2’ remains unchanged.  The two tensors must have
+     matching sizes.
+
+ -- Function: int tensor_mul (tensor * t1, const tensor * t2)
+
+     This function multiplies the elements of tensor ‘t2’ to the
+     elements of tensor ‘t1’.  The result ‘t1 = t1 * t2’ is stored in
+     ‘t1’ and ‘t2’ remains unchanged.  The two tensors must have
+     matching sizes.
+
+ -- Function: int tensor_div (tensor * t1, const tensor * t2)
+
+     This function divides the elements of tensor ‘t2’ from the elements
+     of tensor ‘t1’.  The result ‘t1 = t1 / t2’ is stored in ‘t1’ and
+     ‘t2’ remains unchanged.  The two tensors must have matching sizes.
+
+ -- Function: int tensor_int_mod (tensor * t1, const tensor * t2)
+
+     This function is defined only for integer data.  It calculates the
+     modulus operator or the remainder after division of the elements of
+     tensor ‘t2’ from the elements of tensor ‘t1’.  The result ‘t1 = t1
+     % t2’ is stored in ‘t1’ and ‘t2’ remains unchanged.  The two
+     tensors must have matching sizes.
+
+ -- Function: void tensor_scale_add (tensor * t, const double s, const
+          double a)
+
+     This function works inplace to scale the elements of tensor ‘t’ by
+     a constant factor ‘s’ and to that add a constant ‘a’.  The result
+     ‘t = t * s + a’ is stored in ‘t’.
+
+   The following operators are defined only for complex tensors.
+
+ -- Function: void tensor_conj (tensor * t)
+
+     This function works inplace to provide the conjugate of a complex
+     data tensor.
+
+ -- Function: void tensor_arg (tensor * t)
+
+     This function works inplace and calculates the argument of a
+     complex tensor.  The argument of a complex number is the angle in
+     the complex plane between the positive real axis and a line passing
+     through zero and the number.  This angle is measured in the usual
+     fashion and ranges from ‘-pi’ to ‘pi’.  It is stored in the real
+     part of the element while the imaginary part is set to ‘0’.
+
+
+File: tensor.info,  Node: Trigonometric operators,  Next: Exponential operators,  Prev: Arithmetic operators,  Up: Tensor operations
+
+1.8.4 Trigonometric operators
+-----------------------------
+
+The functions below are defined for floating-point data type tensors.
+From the complex tensors, only the ‘double’ data type is supported.
+
+ -- Function: void tensor_sin (tensor * t)
+
+     This functions calculates inplace the sine of the elements in ‘t’.
+
+ -- Function: void tensor_cos (tensor * t)
+
+     This functions calculates inplace the cosine of the elements in
+     ‘t’.
+
+ -- Function: void tensor_tan (tensor * t)
+
+     This functions calculates inplace the tangent of the elements in
+     ‘t’.
+
+ -- Function: void tensor_sec (tensor * t)
+
+     This functions calculates inplace the secant of the elements in
+     ‘t’.
+
+ -- Function: void tensor_csc (tensor * t)
+
+     This functions calculates inplace the cosecant of the elements in
+     ‘t’.
+
+ -- Function: void tensor_cot (tensor * t)
+
+     This functions calculates inplace the cotangent of the elements in
+     ‘t’.
+
+ -- Function: void tensor_arcsin (tensor * t)
+
+     This functions calculates inplace the arcsine of the elements in
+     ‘t’.
+
+ -- Function: void tensor_arccos (tensor * t)
+
+     This functions calculates inplace the arccosine of the elements in
+     ‘t’.
+
+ -- Function: void tensor_arctan (tensor * t)
+
+     This functions calculates inplace the arctangent of the elements in
+     ‘t’.
+
+ -- Function: tensor * tensor_arctan2 (const tensor * y, const tensor *
+          x)
+
+     This function returns a tensor containing the computation of the
+     arctangent of ‘y / x’, but the signs of both tensor arguments are
+     used to determine the quadrant of the result, and ‘x’ is permitted
+     to be zero.  The return value is given in radians and is in the
+     range ‘-pi’ to ‘pi’, inclusive.
+
+     This function is defined only for real data type tensors.
+
+ -- Function: void tensor_arcsec (tensor * t)
+
+     This functions calculates inplace the arcsecant of the elements in
+     ‘t’.
+
+ -- Function: void tensor_arccsc (tensor * t)
+
+     This functions calculates inplace the arccosecant of the elements
+     in ‘t’.
+
+ -- Function: void tensor_arccot (tensor * t)
+
+     This functions calculates inplace the arccotangent of the elements
+     in ‘t’.
+
+ -- Function: void tensor_sinh (tensor * t)
+
+     This functions calculates inplace the hyperbolic sine of the
+     elements in ‘t’.
+
+ -- Function: void tensor_cosh (tensor * t)
+
+     This functions calculates inplace the hyperbolic cosine of the
+     elements in ‘t’.
+
+ -- Function: void tensor_tanh (tensor * t)
+
+     This functions calculates inplace the hyperbolic tangent of the
+     elements in ‘t’.
+
+ -- Function: void tensor_sech (tensor * t)
+
+     This functions calculates inplace the hyperbolic secant of the
+     elements in ‘t’.
+
+ -- Function: void tensor_csch (tensor * t)
+
+     This functions calculates inplace the hyperbolic cosecant of the
+     elements in ‘t’.
+
+ -- Function: void tensor_coth (tensor * t)
+
+     This functions calculates inplace the hyperbolic cotangent of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arcsinh (tensor * t)
+
+     This functions calculates inplace the hyperbolic arcsine of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arccosh (tensor * t)
+
+     This functions calculates inplace the hyperbolic arccosine of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arctanh (tensor * t)
+
+     This functions calculates inplace the hyperbolic arctangent of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arcsech (tensor * t)
+
+     This functions calculates inplace the hyperbolic arcsecant of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arccsch (tensor * t)
+
+     This functions calculates inplace the hyperbolic arccosecant of the
+     elements in ‘t’.
+
+ -- Function: void tensor_arccoth (tensor * t)
+
+     This functions calculates inplace the hyperbolic arccotangent of
+     the elements in ‘t’.
+
+
+File: tensor.info,  Node: Exponential operators,  Next: Logarithmic operators,  Prev: Trigonometric operators,  Up: Tensor operations
+
+1.8.5 Exponential operators
+---------------------------
+
+ -- Function: void tensor_pow (tensor * t, double p)
+
+     This function calculates the value of elements in ‘t’ raised to the
+     power ‘p’.
+
+ -- Function: void tensor_pow_real (tensor * t, double p)
+
+     This function calculates the value of elements in a complex data
+     type tensor ‘t’ raised to the real power ‘p’.
+
+ -- Function: void tensor_sqrt (tensor * t)
+
+     This function calculates the square root of the elements in tensor
+     ‘t’.
+
+ -- Function: void tensor_cbrt (tensor * t)
+
+     This function calculates the cube root of the elements in tensor
+     ‘t’.
+
+ -- Function: void tensor_exp (tensor * t)
+
+     This function calculates ‘e’ (the base of natural logarithms)
+     raised to the power ‘t’ for each element of ‘t’.
+
+ -- Function: void tensor_exp2 (tensor * t)
+
+     This function calculates ‘2’ raised to the power ‘t’ for each
+     element of ‘t’.
+
+ -- Function: void tensor_exp10 (tensor * t)
+
+     This function calculates ‘10’ raised to the power ‘t’ for each
+     element of ‘t’.
+
+ -- Function: void tensor_expm1 (tensor * t)
+
+     This function calculates ‘exp(t) - 1’, for each element of ‘t’, in
+     a way that is accurate for small values of ‘t’.
+
+     This function is only defined for real data types.
+
+
+File: tensor.info,  Node: Logarithmic operators,  Next: Statistics operators,  Prev: Exponential operators,  Up: Tensor operations
+
+1.8.6 Logarithmic operators
+---------------------------
+
+ -- Function: void tensor_log (tensor * t)
+
+     This function calculates the natural logarithm (base ‘e’) of the
+     elements in tensor ‘t’.
+
+ -- Function: void tensor_log2 (tensor * t)
+
+     This function calculates the base ‘2’ logarithm of the elements in
+     tensor ‘t’.
+
+ -- Function: void tensor_log10 (tensor * t)
+
+     This function calculates the base ‘10’ logarithm of the elements in
+     tensor ‘t’.
+
+ -- Function: void tensor_log1p (tensor * t)
+
+     This function calculates the value ‘log(1 + t)’, for each element
+     in tensor ‘t’, in a way that is accurate for small values in ‘t’.
+
+     This function is only defined for real data types.
+
+ -- Function: void tensor_logb (tensor * t)
+
+     This function extracts the exponent of each element of ‘t’ as a
+     floating-point value.
+
+
+File: tensor.info,  Node: Statistics operators,  Next: Rounding operators,  Prev: Logarithmic operators,  Up: Tensor operations
+
+1.8.7 Statistics operators
+--------------------------
+
+ -- Function: double tensor_max (const tensor * t)
+
+     This function returns the maximal element in tensor ‘t’.
+
+ -- Function: double tensor_min (const tensor * t)
+
+     This function returns the minimal element in tensor ‘t’.
+
+ -- Function: void tensor_minmax (const tensor * t, double * min, double
+          * max)
+
+     This function returns the minimal element in tensor ‘t’ in ‘min’
+     and the maximal element in tensor ‘t’ in ‘max’.
+
+ -- Function: size_t tensor_min_index (const tensor * t)
+
+     This function returns the index of the minimal element in tensor
+     ‘t’.
+
+ -- Function: size_t tensor_max_index (const tensor * t)
+
+     This function returns the index of the maximal element in tensor
+     ‘t’.
+
+ -- Function: void tensor_minmax_index const tensor * t, size_t *
+          min_index, size_t * max_index)
+
+     This function returns the index of the minimal element in tensor
+     ‘t’ in ‘min_index’ and the index of the maximal element in tensor
+     ‘t’ in ‘max_index’.
+
+ -- Function: double tensor_sum (const tensor * t)
+
+     This function returns the sum of all the elements in tensor ‘t’.
+
+ -- Function: double tensor_prod (const tensor * t)
+
+     This function returns the product of all the elements in tensor
+     ‘t’.
+
+ -- Function: double tensor_mean (const tensor * t)
+
+     This function returns the average or the arithmetic mean of the
+     elements in tensor ‘t’.
+
+ -- Function: double tensor_var (const tensor * t)
+
+     This function returns the variance of the elements in tensor ‘t’.
+
+ -- Function: double tensor_std (const tensor * t)
+
+     This function returns the standard deviation of the elements in
+     tensor ‘t’.
+
+
+File: tensor.info,  Node: Rounding operators,  Next: Logical operators,  Prev: Statistics operators,  Up: Tensor operations
+
+1.8.8 Rounding operators
+------------------------
+
+ -- Function: void tensor_ceil (tensor * t)
+
+     This function rounds upwards to the nearest integer value the
+     elements in ‘t’.
+
+ -- Function: void tensor_floor (tensor * t)
+
+     This function rounds downwards to the nearest integer value the
+     elements in ‘t’.
+
+ -- Function: void tensor_round (tensor * t)
+
+     These functions round the elements in ‘t’ to the nearest integer
+     value according to the current rounding mode.  The default rounding
+     mode is to round to the nearest integer.
+
+ -- Function: void tensor_clip (tensor * t, const double min, const
+          double max)
+
+     This function clips the value of each element in tensor ‘t’, such
+     that the elements value is in the interval ‘[min, max]’.
+
+
+File: tensor.info,  Node: Logical operators,  Next: Sorting operators,  Prev: Rounding operators,  Up: Tensor operations
+
+1.8.9 Logical operators
+-----------------------
+
+ -- Function: void tensor_not (tensor * t)
+
+     This function performs a negation (logical not) operation on each
+     element in tensor ‘t’.
+
+ -- Function: tensor_int * tensor_fcmp (const tensor * t1, const tensor
+          * t2, const double eps)
+
+     This function determines whether elements in tensor ‘t1’ are
+     approximately equal to a relative accuracy ‘eps’ to corresponding
+     elements in tensor ‘t2’.  It returns an ‘int’ tensor with values
+     ‘-1’ where the element in ‘t1’ is less that the one in ‘t2’, ‘0’
+     where they are approximately equal, and ‘1’ where it is greater.
+     It is based on the ‘gsl_fcmp’ function.  *Note (gsl-ref)Approximate
+     Comparison of Floating Point Numbers::.
+
+ -- Function: tensor_int * tensor_fcmpc (const tensor * t, const double
+          x, const double eps)
+
+     This function determines whether elements in tensor ‘t’ are
+     approximately equal to a relative accuracy ‘eps’ to a constant
+     value ‘x’.  It returns an ‘int’ tensor with values ‘-1’ where the
+     element in ‘t1’ is less that the one in ‘t2’, ‘0’ where they are
+     approximately equal, and ‘1’ where it is greater.  It is based on
+     the ‘gsl_fcmp’ function.  *Note (gsl-ref)Approximate Comparison of
+     Floating Point Numbers::.
+
+ -- Function: tensor_int * tensor_cmp (const tensor * t1, const tensor *
+          t2)
+
+     This function performs a comparison operation between the elements
+     in tensors ‘t1’ and ‘t2’.  It returns an int tensor with element
+     values ‘-1’ where an element in tensor ‘t1’ is less than that of
+     ‘t2’, ‘0’ where it is equal, and ‘1’ where it is larger.  The input
+     tensors need to have matching sizes.
+
+ -- Function: tensor_int * tensor_cmpc (const tensor * t, const double *
+          x)
+
+     This function performs a comparison operation between the elements
+     in tensors ‘t’ and a constant value ‘x’.  It returns an int tensor
+     with element values ‘-1’ where an element in tensor ‘t1’ is less
+     than ‘x’, ‘0’ where it is equal, and ‘1’ where it is larger.
+
+ -- Function: tensor_int * tensor_and (const tensor * t1, const tensor *
+          t2)
+
+     This function performs a logical ‘and’ operation between the
+     elements in tensors ‘t1’ and ‘t2’.  It returns an ‘int’ tensor with
+     element values ‘1’ where both elements in ‘t1’ and ‘t2’ evaluate to
+     true, and ‘0’ otherwise.  The input tensors need to have matching
+     sizes.
+
+ -- Function: tensor_int * tensor_or (const tensor * t1, const tensor *
+          t2)
+
+     This function performs a logical ‘or’ operation between the
+     elements in tensors ‘t1’ and ‘t2’.  It returns an ‘int’ tensor with
+     element values ‘1’ where at least one element in ‘t1’ or ‘t2’
+     evaluates to true, and ‘0’ otherwise.  The input tensors need to
+     have matching sizes.
+
+ -- Function: tensor_int * tensor_xor (const tensor * t1, const tensor *
+          t2)
+
+     This function performs a logical ‘xor’ operation between the
+     elements in tensors ‘t1’ and ‘t2’.  It returns an ‘int’ tensor with
+     element values ‘1’ where at most one of the elements, either in
+     ‘t1’ or ‘t2’, evaluates to true, and ‘0’ otherwise.  The input
+     tensors need to have matching sizes.
+
+
+File: tensor.info,  Node: Sorting operators,  Prev: Logical operators,  Up: Tensor operations
+
+1.8.10 Sorting operators
+------------------------
+
+These functions sort tensor data, either directly or indirectly by using
+an index.  All the functions rely on the heapsort algorithm as
+implemented in GSL.
+
+ -- Function: void tensor_sort (tensor * t)
+
+     This function sorts the elements of tensor ‘t’ inplace into
+     ascending order.
+
+ -- Function: void tensor_sort_index (size_t * p, const tensor * t)
+
+     This function indirectly sorts the elements of tensor ‘t’ into
+     ascending order.  The resulting permutation is stored in array ‘p’,
+     which should be of size equal to the total number of elements in
+     ‘t’.  The elements of ‘p’ give the index of the tensor element
+     which would have been stored in that position if the tensor had
+     been sorted in place.  The first element of ‘p’ gives the index of
+     the smallest element in ‘t’, and the last element of ‘p’ gives the
+     index of the greatest element in ‘t’.  The tensor itself is not
+     changed.
+
+
+File: tensor.info,  Node: Tensor properties,  Next: Examples,  Prev: Tensor operations,  Up: Tensor
+
+1.9 Tensor properties
+=====================
+
+These functions below are defined for both real and complex tensors.
+For complex tensors, both the real and the imaginary part must satisfy
+the conditions for ‘is_null, is_pos, is_neg, is_nonneg, is_nonpos’
+functions.
+
+ -- Function: int tensor_match_size (const tensor * t1, const tensor *
+          t2)
+
+     This functions compares the dimensions and sizes of tensors ‘t1’
+     and ‘t2’.  It returns ‘1’ if the dimensions and the sizes match,
+     otherwise, it signals an error ‘GSL_EBADLEN’ and returns ‘0’.
+
+ -- Function: int tensor_match_tsize (const tensor * t1, const tensor *
+          t2)
+
+     This functions compares the total number of elements of tensors
+     ‘t1’ and ‘t2’.  It returns ‘1’ if they are equal, otherwise, it
+     signals an error ‘GSL_EBADLEN’ and returns ‘0’.
+
+ -- Function: int tensor_is_null (const tensor * t)
+
+ -- Function: int tensor_is_pos (const tensor * t)
+
+ -- Function: int tensor_is_neg (const tensor * t)
+
+ -- Function: int tensor_is_nonneg (const tensor * t)
+
+ -- Function: int tensor_is_nonpos (const tensor * t)
+
+     These functions return ‘1’ if all of the elements of tensor ‘t’ are
+     null, positive, negative, non-negative, non-positive respectively,
+     and ‘0’ otherwise.
+
+ -- Function: int tensor_equal (const tensor * t1, const tensor * t2)
+
+     This function returns ‘1’ if each of the elements of tensor ‘t1’ is
+     equal to the corresponding element of tensor ‘t2’, and ‘0’
+     otherwise.
+
+ -- Function: int tensor_is_same (const tensor * t)
+
+     This function returns ‘1’ if tensor ‘t’ has same (identical) values
+     for each element, and ‘0’ otherwise.
+
+ -- Function: int tensor_is_const (const tensor * t, const double c)
+
+     This function returns ‘1’ if tensor ‘t’ has all elements equal to a
+     constant ‘c’, and ‘0’ otherwise.
+
+ -- Function: size_t tensor_tsize (const tensor * t)
+
+     This function return the total number of elements in tensor ‘t’.
+     An inline version of this function is used when ‘HAVE_INLINE’ is
+     defined.
+
+ -- Function: int tensor_is_view (const tensor * t)
+
+     This function returns ‘1’ if tensor ‘t’ is a view, and ‘0’
+     otherwise.  An inline version of this function is used when
+     ‘HAVE_INLINE’ is defined.
+
+ -- Function: int tensor_is_contiguous (const tensor * t)
+
+     This function returns ‘1’ if tensor ‘t’'s memory is contiguous, and
+     ‘0’ otherwise.  An inline version of this function is used when
+     ‘HAVE_INLINE’ is defined.
+
+
+File: tensor.info,  Node: Examples,  Prev: Tensor properties,  Up: Tensor
+
+1.10 Examples
+=============
+
+The following code examples show basic use of Tensor 0.1.  Allocation,
+initialisation and reading from a tensor can be done with the functions
+*note tensor_alloc(): function_tensor_alloc, *note tensor_set():
+function_tensor_set, *note tensor_get(): function_tensor_get, as in the
+program below:
+
+#include <stdio.h>
+#include <tensor/tensor.h>
+
+int
+main (void)
+{
+  tensor * t = tensor_alloc (3, 2, 3, 4);
+
+  size_t i, j, k;
+
+  for (i = 0; i < 2; ++i)
+    for (j = 0; j < 3; ++j)
+      for (k = 0; k < 4; ++k)
+        {
+          tensor_set (t, i * 0.2 + j * 0.3 + k, i, j, k);
+        }
+
+  for (i = 0; i < 3; ++i)       /* INDEX OUT OF RANGE ERROR */
+    for (j = 0; j < 3; ++j)
+      for (k = 0; k < 4; ++k)
+        {
+          printf ("t (%zu, %zu, %zu) = %g\n", i, j, k, 
+                  tensor_get (t, i, j, k));
+        }
+
+  tensor_free (t);
+
+  return 0;
+}
+
+   The element values of the tensor are printed in the output of the
+program.  The outer loop attempts to access outside of the range of the
+tensor ‘t’, which produces an error caught by the range-checking code.
+
+t (0, 0, 0) = 0
+t (0, 0, 1) = 1
+t (0, 0, 2) = 2
+t (0, 0, 3) = 3
+t (0, 1, 0) = 0.3
+t (0, 1, 1) = 1.3
+t (0, 1, 2) = 2.3
+t (0, 1, 3) = 3.3
+t (0, 2, 0) = 0.6
+...
+t (1, 2, 3) = 3.8
+
+gsl: ../../tensor/prop_source.c:40: ERROR: index 2 out of range for
+tensor dim 0 of size 2
+Default GSL error handler invoked.
+Aborted (core dumped)
+
+   The next example demonstrates writing/reading a tensor to/from a
+file.
+
+#include <stdio.h>
+#include <tensor/tensor.h>
+
+int
+main (void)
+{
+  size_t i, j, k, diff = 0;
+  double t_el, u_el;
+  
+  tensor * t = tensor_alloc (3, 10, 10, 10);
+  tensor * u = tensor_alloc (3, 10, 10, 10);
+
+  for (i = 0; i < 10; ++i)
+    for (j = 0; j < 10; ++j)
+      for (k = 0; k < 10; ++k)
+        {
+          tensor_set (t, i * 0.2 + j * 0.3 + k, i, j, k);
+        }
+
+  FILE * f = fopen ("test.dat", "wb");
+  tensor_fwrite (f, t);
+  fclose (f);
+
+  f = fopen ("test.dat", "rb");
+  tensor_fread (f, u);
+  fclose (f);
+
+  for (i = 0; i < 10; ++i)
+    for (j = 0; j < 10; ++j)
+      for (k = 0; k < 10; ++k)
+        {
+          t_el = tensor_get (t, i, j, k);
+          u_el = tensor_get (u, i, j, k);
+
+          if (t_el != u_el)
+            ++diff;
+        }
+
+  tensor_free (t);
+  tensor_free (u);
+
+  printf ("differences = %zu (should be zero)\n", diff);
+  
+  return (diff > 0);
+}
+
+   After running the program, a binary ‘test.dat’ file should contain
+the elements of tensor ‘t’.  The tensor ‘u’ that is read back in from
+the file should be identical to ‘t’.
+
+   The following program shows the use of tensor views to set the
+elements of a tensor of ‘dim 3’ to ‘0’ at places where both the row and
+column index are even.
+
+#include <stdio.h>
+#include <tensor/tensor.h>
+
+int
+main (void)
+{
+  tensor * t = tensor_alloc (3, 2, 3, 4);
+
+  size_t i, j, k;
+
+  for (i = 0; i < 2; ++i)
+    for (j = 0; j < 3; ++j)
+      for (k = 0; k < 4; ++k)
+        {
+          tensor_set (t, i * 0.2 + j * 0.3 + k, i, j, k);
+        }
+
+  printf("Tensor t elements: \n");
+  
+  for (i = 0; i < t->size[0]; ++i)
+      for (j = 0; j < t->size[1]; ++j)
+          for (k = 0; k < t->size[2]; ++k)
+            {
+              printf ("t (%zu, %zu, %zu) = %g\n", i, j, k, 
+                      tensor_get (t, i, j, k));
+            }
+
+  tensor * v = tensor_view (t,
+                            RANGE (0, t->size[0], 1),
+                            RANGE (0, t->size[1], 2),
+                            RANGE (0, t->size[2], 2));
+
+  /* Sets elements where both row and column index is even to zero */
+  tensor_set_zero (v);
+
+  printf("\n");
+  printf("Tensor t elements: \n");
+  
+  for (i = 0; i < t->size[0]; ++i)
+      for (j = 0; j < t->size[1]; ++j)
+          for (k = 0; k < t->size[2]; ++k)
+            {
+              printf ("t (%zu, %zu, %zu) = %g\n", i, j, k, 
+                      tensor_get (t, i, j, k));
+            }
+
+  tensor_free (v);
+  tensor_free (t);
+
+  return 0;
+}
+
+
+File: tensor.info,  Node: Concept index,  Prev: Tensor,  Up: Top
+
+Concept index
+*************
+
+ [index ]
+* Menu:
+
+* access:                                Tensor elements access.
+                                                                (line 6)
+* adjoin:                                Basic operators.       (line 6)
+* allocate:                              Tensor allocation.     (line 6)
+* assign:                                Basic operators.       (line 6)
+* compiling:                             Using the library.     (line 6)
+* copy:                                  Basic operators.       (line 6)
+* Exponential operators:                 Exponential operators. (line 6)
+* free:                                  Tensor allocation.     (line 6)
+* get:                                   Tensor elements access.
+                                                                (line 6)
+* initialise:                            Tensor initialisation. (line 6)
+* linking:                               Using the library.     (line 6)
+* Logarithmic operators:                 Logarithmic operators. (line 6)
+* Logical operators:                     Logical operators.     (line 6)
+* operations:                            Tensor operations.     (line 6)
+* operators:                             Tensor operations.     (line 6)
+* properties:                            Tensor properties.     (line 6)
+* read:                                  Reading and writing tensors.
+                                                                (line 6)
+* Rounding operators:                    Rounding operators.    (line 6)
+* set:                                   Tensor elements access.
+                                                                (line 6)
+* shape:                                 Shape operators.       (line 6)
+* Sorting operators:                     Sorting operators.     (line 6)
+* Statistics operators:                  Statistics operators.  (line 6)
+* swap:                                  Basic operators.       (line 6)
+* Tensor:                                Tensor.                (line 6)
+* Tensor allocation:                     Tensor allocation.     (line 6)
+* Tensor elements access:                Tensor elements access.
+                                                                (line 6)
+* Tensor initialisation:                 Tensor initialisation. (line 6)
+* Tensor types:                          Tensor types.          (line 6)
+* Trigonometric operators:               Trigonometric operators.
+                                                                (line 6)
+* Using the library:                     Using the library.     (line 6)
+* views:                                 Tensor views.          (line 6)
+* write:                                 Reading and writing tensors.
+                                                                (line 6)
+
+
+Tag Table:
+Node: Top864
+Node: Tensor1730
+Node: Using the library3068
+Node: An example program3608
+Node: Compiling and linking4221
+Node: Shared libraries6449
+Node: Tensor types7653
+Node: Tensor allocation11096
+Ref: function_tensor_alloc11682
+Node: Tensor elements access12913
+Ref: function_tensor_get13545
+Ref: function_tensor_set13885
+Node: Tensor initialisation15480
+Node: Reading and writing tensors17372
+Node: Tensor views19495
+Node: Tensor operations22533
+Node: Basic operators23354
+Node: Shape operators24617
+Node: Arithmetic operators26122
+Node: Trigonometric operators29670
+Node: Exponential operators33795
+Node: Logarithmic operators35305
+Node: Statistics operators36340
+Node: Rounding operators38263
+Node: Logical operators39195
+Node: Sorting operators42838
+Node: Tensor properties43957
+Node: Examples46706
+Node: Concept index50776
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

@@ -1,0 +1,7 @@
+list,position,matrix,backend,rows,columns,nnz,inner,median_us,error
+mosaic-paper,1,lp_nug08,bsmr,912,1632,7296,100,36.167500184092205,
+mosaic-paper,2,m3plates,bsmr,11107,11107,6639,100,53.690499953518156,
+mosaic-paper,3,IG5-12,bsmr,2296,2875,46260,100,56.35999968944816,
+mosaic-paper,4,g7jac020sc,bsmr,5850,5850,42568,100,59.72200005999184,
+mosaic-paper,5,gemat1,bsmr,4929,10595,46591,100,63.98000004992355,
+mosaic-paper,6,mimo28x28_system,bsmr,13251,13251,48737,100,77.82049988236395,

@@ -1,0 +1,59 @@
+diff --git a/src/sddmmKernel.cu b/src/sddmmKernel.cu
+index 87afba3..380d23a 100644
+--- a/src/sddmmKernel.cu
++++ b/src/sddmmKernel.cu
+@@ -2037,8 +2037,8 @@ __global__ void sddmm_gpu_sparse_block_2_2threadOneData_shuffle(
+ 
+     const UIN index = startIndexOfSparseDataCurrentBlock + (tId >> 1);
+ 
+-    const UIN relativeRow = relativeRows[index];
+-    const UIN col = sparseCols[index];
++    const UIN relativeRow = index < indexBoundaryCurrentRowPanel ? relativeRows[index] : 0;
++    const UIN col = index < indexBoundaryCurrentRowPanel ? sparseCols[index] : 0;
+ 
+     __shared__ float aTileSMEM[aTileSMEMSize];
+ 
+@@ -2093,7 +2093,7 @@ __global__ void sddmm_gpu_sparse_block_2_2threadOneData_shuffle(
+     }
+ 
+     // Use the shuffle instruction to merge the results of two adjacent threads.
+-    const unsigned mask = (1 << tId) | (1 << (tId ^ 1)); // 只同步相邻线程
++    const unsigned mask = (1u << laneId) | (1u << (laneId ^ 1)); // 只同步相邻线程
+     c0 += __shfl_xor_sync(mask, c0, 1); // 使用shuffle指令. 使相邻的线程的c0结果相加
+     // c1 += __shfl_xor_sync(mask, c1, 1); // 使用shuffle指令. 使相邻的线程的c1结果相加
+ 
+@@ -2545,7 +2545,12 @@ void sddmm_gpu(UIN M,
+                const RPHM& rphm,
+                float* matrixP,
+                Logger& logger){
+-    dim3 grid_dense, block_dense, grid_sparse, block_sparse;
++    dim3 grid_dense(rphm.numRowPanels(),
++                    (rphm.maxNumDenseColBlocksInRowPanel() +
++                     each_thread_block_counts_the_number_Of_dense_blocks - 1) /
++                        each_thread_block_counts_the_number_Of_dense_blocks);
++    dim3 grid_sparse(rphm.numSparseThreadBlocks());
++    dim3 block_dense, block_sparse;
+ 
+     block_dense.x = WARP_SIZE *
+         sddmm_dense_block_number_of_warps_per_thread_block;
+@@ -2566,12 +2571,6 @@ void sddmm_gpu(UIN M,
+ #ifdef WMMA_16_16_8
+         if (grid_dense.x > 0 && grid_dense.y > 0){
+             {
+-                // Assign row panel to x-axis of grid, and assign col block to y-axis of grid
+-                grid_dense.x = rphm.numRowPanels();
+-                grid_dense.y =
+-                    std::ceil(static_cast<float>(rphm.maxNumDenseColBlocksInRowPanel())
+-                        /
+-                        each_thread_block_counts_the_number_Of_dense_blocks);
+                 kernel::sddmm_gpu_dense_block_m16n16k8_matrixA_rowMaj_matrixB_colMaj<<<
+                     grid_dense, block_dense, 0, denseStream>>>(
+                         M, N, K, matrixA, matrixB, rphm.reorderedRows().size(),
+@@ -2613,7 +2612,6 @@ void sddmm_gpu(UIN M,
+             //            matrixP);
+             // }
+             {
+-                grid_sparse.x = rphm.numSparseThreadBlocks();
+                 kernel::sddmm_gpu_sparse_block_2_2threadOneData_shuffle<<<grid_sparse,
+                     block_sparse, 0, sparseStream>>>(
+                         M, N, K,

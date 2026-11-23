@@ -37,7 +37,7 @@ under `/mosaic-artifact/tensor_algebra_systems_lib/tblis`.
 
 ## Running cuBLAS
 
-The image includes CUDA 12.6.3 and the cuBLAS headers and libraries. The host
+The image installs CUDA 13.1 and the cuBLAS and cuSPARSE development libraries from the Ubuntu 26.04 package archive. The host
 needs a compatible NVIDIA driver and the
 [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 configured for Docker. Start the container with GPU access:
@@ -73,20 +73,103 @@ mosaic/build/bin/taco-bench --benchmark_filter='^bench_spmv_cuda/250/'
 complete FP32 CSR matrix–vector multiply, including device allocation and
 host–device transfers on every call.
 
-## Testing cuSPARSE SDDMM across sparsities
+## Testing GPU SDDMM across sparsities
 
-In a rebuilt image started with `--gpus all`, run:
+In a rebuilt image started with `--gpus all`, `run-fig16` runs the cuSPARSE
+benchmark and the optimized CUDA kernel. Each can also be run separately.
 
 ```bash
 make -C /mosaic-artifact/scripts/bench-scripts run-sddmm-varsparsity-cusparse
+make -C /mosaic-artifact/scripts/bench-scripts run-sddmm-varsparsity-cuda
+make -C /mosaic-artifact/scripts/bench-scripts draw-fig16
 ```
 
-This runs FP32 CSR SDDMM at the eight Figure 16 densities with 2,000 × 2,000
-matrices and writes Google Benchmark JSON to
-`scripts/bench-scripts/sddmm_varSparsity/result/cusparse`. Timings include
-the cuSPARSE call and synchronization. Allocation, transfers, preprocessing,
-and sampled numerical checks run outside the timed region. Native builds
-can enable the dedicated binary with `-DMOSAIC_CUSPARSE_SDDMM=ON`.
+Both benchmarks run FP32 CSR SDDMM at the eight Figure 16 densities with
+2,000 × 2,000 matrices. They write Google Benchmark JSON to
+`scripts/bench-scripts/sddmm_varSparsity/result/` under `cusparse` and
+`cuda_optimized`, and the plot includes each series when its results are
+present. Timings include the call or kernel launch and synchronization.
+Allocation, transfers, preprocessing, and sampled numerical checks run outside
+the timed region. Enable the native targets with `-DMOSAIC_CUSPARSE_SDDMM=ON`
+and `-DMOSAIC_CUDA_SDDMM=ON`, respectively.
+
+## Running SuiteSparse SDDMM
+
+Rebuild the benchmark binaries, then run the SuiteSparse sweep from the
+artifact root.
+
+```bash
+make -C scripts/bench-scripts run-sddmm-suitesparse
+```
+
+This reads all five checked-in SuiteSparse lists, caches Matrix Market files
+under `mosaic-benchmarks/data/suitesparse`, and writes
+`scripts/bench-scripts/sddmm_suitesparse/result/timings.csv`. Each distinct
+matrix is timed once per built backend and appears in the CSV at its position
+in every list that contains it. The matrix's nonzero pattern forms the binary
+mask. The dense operands use an inner dimension of 100 and FP32 values.
+
+To try one matrix per list on the CPU, or to run against a local matrix cache:
+
+```bash
+make -C scripts/bench-scripts run-sddmm-suitesparse \
+    SUITESPARSE_ARGS="--limit 1 --backend cpu_blocked"
+make -C scripts/bench-scripts run-sddmm-suitesparse \
+    SUITESPARSE_ARGS="--offline --matrix-dir /path/to/matrix-cache"
+```
+
+The local cache accepts `NAME.mtx` or `NAME/NAME.mtx`. Use `--list` to select
+individual list files and `--output` to save runs to separate CSVs.
+
+The Docker image also builds the official BSMR-SDDMM implementation at a
+pinned revision. To run just this backend inside a GPU-enabled container
+with the matrix cache and results directory mounted:
+
+```bash
+make -C /mosaic-artifact/scripts/bench-scripts run-sddmm-mosaic-paper \
+    'SUITESPARSE_ARGS=--matrix-dir /matrices --offline --backend bsmr --output /results/mosaic-paper-bsmr.csv'
+```
+
+BSMR pads the 100-element reduction to 128 with zeros for its CUDA kernels.
+Its dense tiles use TF32 Tensor Cores and its sparse tiles use FP32 CUDA
+cores. The benchmark times the upstream launch and synchronization, including
+its stream and event overhead. Matrix reordering and transfers are outside
+the timed region.
+
+The `sampled_gsl` backend calls `gsl_blas_sdot` once per stored entry.
+To compare it with the existing GSL GEMV backend on the cached paper matrices:
+
+```bash
+make -C scripts/bench-scripts run-sddmm-mosaic-paper \
+    SUITESPARSE_ARGS="--offline --matrix-dir $PWD/suitesparse-cache --backend sampled_gsl --backend gemv_gsl --output /tmp/sddmm-gsl.csv"
+```
+
+The MKL backends (`mkl`, `dot_mkl`, and `gemv_mkl`) use the dedicated
+`taco-bench-suitesparse-mkl` executable. Set `MKL_NUM_THREADS` in the
+environment to choose the thread count. The Docker image builds this target
+with `MOSAIC_SUITESPARSE_LIBRARIES=ON`.
+
+With the six paper matrices cached in `suitesparse-cache/`, run the MKL
+backends at one and four threads from the artifact root:
+
+```bash
+mkdir -p suitesparse-results
+for threads in 1 4; do
+    docker --context rootless run --rm \
+        -e "MKL_NUM_THREADS=$threads" -e MKL_DYNAMIC=FALSE \
+        -v "$PWD/suitesparse-cache:/matrices:ro" \
+        -v "$PWD/suitesparse-results:/results" \
+        mosaic-artifact make -C /mosaic-artifact/scripts/bench-scripts run-sddmm-mosaic-paper \
+        "SUITESPARSE_ARGS=--matrix-dir /matrices --offline --backend mkl --backend dot_mkl --backend gemv_mkl --output /results/mosaic-paper-mkl-${threads}t.csv"
+done
+```
+
+To run the rectangular SGEMM regression inside the image:
+
+```bash
+docker --context rootless run --rm mosaic-artifact \
+    ctest --test-dir /mosaic-artifact/mosaic/build -R suitesparse-mkl-lp_nug08 -V
+```
 
 ## Adding Additional Libraries
 ### Downlaoding CPU External Functions

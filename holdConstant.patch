@@ -1,0 +1,207 @@
+diff --git a/src/index_notation/index_notation.cpp b/src/index_notation/index_notation.cpp
+index 7a66a15f..f2cf33a0 100644
+--- a/src/index_notation/index_notation.cpp
++++ b/src/index_notation/index_notation.cpp
+@@ -2728,7 +2728,7 @@ std::vector<IndexStmt> ForallMany::getStmts() const{
+ }
+ 
+ template <> bool isa<ForallMany>(IndexStmt s) {
+-  return isa<ForallMany>(s.ptr);
++  return isa<ForallManyNode>(s.ptr);
+ }
+ 
+ template <> ForallMany to<ForallMany>(IndexStmt s) {
+@@ -4175,63 +4175,52 @@ static std::map<IndexExpr, IndexExpr> toMatchVars(IndexExpr exprToAccelerate, st
+ 
+ }
+ 
+-static IndexStmt constructInnerForalls(IndexExpr e, std::vector<IndexVar> indexVarsToHoldConstant, std::map<IndexExpr, IndexExpr> constructMap, IndexExpr toAccelerate){
+-
+-  IndexStmt s; 
++// Pack the input slices for a held-index library call. For a dense dot, a slice
++// independent of the innermost held index can be reused across calls.
++static IndexStmt constructInnerForalls(IndexExpr expr, const std::vector<IndexVar>& held,
++                                      const std::map<IndexExpr, IndexExpr>& constructMap,
++                                      bool scalarResult, IndexStmt& outerCopy) {
+   std::set<IndexVar> iVars;
+-  match(e,
+-    function<void(const AccessNode*, Matcher*)>([&](const AccessNode* op, Matcher* ctx) {
+-      for (auto &i : op->indexVars) {
+-          if (!util::contains(indexVarsToHoldConstant, i)){
+-            iVars.insert(i);
+-          }
+-      }
+-    })
+-  );
+-
+-  // std::vector<IndexStmt> stmts;
+-
+-  // for (auto &entry: constructMap){
+-  //   Access a = to<Access>(entry.first);
+-  //   Access b = to<Access>(entry.second);
+-
+-  //   stmts.push_back(Assignment(b, a));
+-  // }
+-
+-
+   std::vector<TensorVar> tensorVars;
+-  match(toAccelerate,
+-    function<void(const AccessNode*, Matcher*)>([&](const AccessNode* op, Matcher* ctx) {
+-          if (!util::contains(tensorVars, op->tensorVar)){
+-            tensorVars.push_back(op->tensorVar);
+-      }
+-    })
+-  );
+-
+-  std::vector<IndexStmt> stmts;
+-
+-  for (auto &tvAccess: tensorVars){
+-    for (const auto &entry : constructMap){
+-      Access a = to<Access>(entry.first);
+-      if (a.getTensorVar().getName() == tvAccess.getName()){
+-        Access b = to<Access>(entry.second);
+-        stmts.push_back(Assignment(b, a));
++  match(expr, function<void(const AccessNode*)>([&](const AccessNode* op) {
++    if (!util::contains(tensorVars, op->tensorVar)) {
++      tensorVars.push_back(op->tensorVar);
++    }
++    for (const auto& index : op->indexVars) {
++      if (!util::contains(held, index)) iVars.insert(index);
++    }
++  }));
++
++  const bool reuseSlice = scalarResult && held.size() == 2 && iVars.size() == 1 &&
++                          isa<Mul>(expr) && std::all_of(tensorVars.begin(), tensorVars.end(),
++                              [](const TensorVar& t) { return isDense(t.getFormat()); });
++  std::vector<IndexStmt> copies, invariantCopies;
++  for (const auto& tensor : tensorVars) {
++    for (const auto& entry : constructMap) {
++      auto src = to<Access>(entry.first);
++      if (src.getTensorVar() != tensor) continue;
++      auto dst = to<Access>(entry.second);
++      IndexStmt copy = Assignment(dst, src);
++      if (reuseSlice && dst.getIndexVars().size() == 1 &&
++          !util::contains(src.getIndexVars(), held.front())) {
++        invariantCopies.push_back(copy);
++      } else {
++        copies.push_back(copy);
+       }
+     }
+   }
+- 
+-  int i = 0;
+-  for (auto iVar: iVars){
+-    if (i==0){
+-      s = forall(iVar, ForallMany(iVar, stmts));
+-    }else{
+-      s = forall(iVar, s);
+-    }
+-    i++;
++
++  if (copies.empty()) copies.swap(invariantCopies);
++  if (!invariantCopies.empty()) {
++    const auto index = *iVars.begin();
++    outerCopy = forall(index, ForallMany(index, invariantCopies));
+   }
+ 
++  IndexStmt s;
++  for (const auto& index : iVars) {
++    s = forall(index, s.defined() ? s : ForallMany(index, copies));
++  }
+   return s;
+-
+ }
+ 
+ static Access constructResultAccess(ArgumentMap argumentMap, IndexExpr exprToAccelerate, FunctionInterface functionInterface){
+@@ -4510,32 +4499,31 @@ IndexStmt IndexStmt::holdConstant(FunctionInterface functionInterface, IndexExpr
+ 
+   Access result = constructResultAccess(argumentMap, e, functionInterface);
+ 
+-  IndexStmt s = constructInnerForalls(e, indexVarsToHoldConstant, tensorVarToIndexVar, exprToAccelerate);
++  const bool byReference = setByReference(assign);
++  IndexStmt outerCopy;
++  IndexStmt s = constructInnerForalls(exprToAccelerate, indexVarsToHoldConstant,
++                                      tensorVarToIndexVar, result.getIndexVars().empty() &&
++                                      !byReference, outerCopy);
+   IndexStmt producer = constructProducer(workspace, result, indexVarsToHoldConstant);
+ 
+   InterfaceCall call(Assignment(result, e), getConcreteCodeGenerator(e, result, argumentMap, functionInterface), result.getTensorVar());
+ 
+-  IndexStmt reducedCode;
+-
+-  IndexStmt copyTemp;
+-  if (setByReference(assign)){
+-    copyTemp = makeConcreteNotation(makeReductionNotation(Assignment(result, call.getAccelGen().getLHS())));
++  const IndexVar inner = indexVarsToHoldConstant.front();
++  std::vector<IndexStmt> innerBody{s};
++  if (byReference) {
++    auto copy = Assignment(result, call.getAccelGen().getLHS());
++    innerBody.push_back(makeConcreteNotation(makeReductionNotation(copy)));
+   }
++  innerBody.push_back(call);
++  innerBody.push_back(producer);
+ 
+-
+-  int i = 0;
+-  for (const auto &constantVar : indexVarsToHoldConstant){
+-    if (i == 0){
+-      if (copyTemp.defined()){
+-        reducedCode = forall(constantVar, ForallMany(constantVar, {s, copyTemp, call, producer}));
+-      }else{
+-        reducedCode = forall(constantVar, ForallMany(constantVar, {s, call, producer}));
+-      } 
+-    }else{
+-      reducedCode = forall(constantVar, reducedCode);
++  IndexStmt reducedCode = forall(inner, ForallMany(inner, innerBody));
++  for (size_t level = 1; level < indexVarsToHoldConstant.size(); ++level) {
++    const auto index = indexVarsToHoldConstant[level];
++    if (level == 1 && outerCopy.defined()) {
++      reducedCode = ForallMany(index, {outerCopy, reducedCode});
+     }
+-    i++;
+-
++    reducedCode = forall(index, reducedCode);
+   }
+ 
+   std::map<IndexExpr, IndexExpr> substitution;
+diff --git a/test/test-interface.cpp b/test/test-interface.cpp
+index c819084a..b4a2e30d 100644
+--- a/test/test-interface.cpp
++++ b/test/test-interface.cpp
+@@ -1741,10 +1741,7 @@ TEST(interface, tiledSaxpyAVX) {
+ 
+ TEST(interface, sdmmCblasDot){
+ 
+-  int dim = 16;
+-  int NUM_I = dim;
+-  int NUM_K = dim;
+-  int NUM_J = dim;
++  constexpr int NUM_I = 9, NUM_K = 13, NUM_J = 16;
+ 
+   float SPARSITY = .3;
+   
+@@ -1753,7 +1750,7 @@ TEST(interface, sdmmCblasDot){
+   Tensor<float> D("D", {NUM_J, NUM_K}, {Dense, Dense});
+   Tensor<float> A("A", {NUM_I, NUM_K}, {Dense, Dense}, 0);
+   Tensor<float> expected("expected", {NUM_I, NUM_K}, {Dense, Dense});
+-  TensorVar precomputed("precomputed", Type(taco::Float32, {16, 16}), Format{Dense, Dense});
++  TensorVar precomputed("precomputed", Type(taco::Float32, {NUM_I, NUM_K}), Format{Dense, Dense});
+ 
+   for (int i = 0; i < NUM_I; i++) {
+     for (int j = 0; j < NUM_J; j++) {
+@@ -1791,6 +1788,15 @@ TEST(interface, sdmmCblasDot){
+    IndexStmt stmt = A.getAssignment().concretize();
+    stmt = stmt.holdConstant(new Sdot(), accelerateExpr, {i, k}, precomputed(i, k));
+ 
++   // Pack the D column once per k, before the loop that calls BLAS for each row.
++   auto columnLoop = to<Forall>(to<DimReduction>(stmt).getProducer());
++   ASSERT_EQ(k, columnLoop.getIndexVar());
++   ASSERT_TRUE(isa<ForallMany>(columnLoop.getStmt()));
++   auto columnBody = to<ForallMany>(columnLoop.getStmt()).getStmts();
++   ASSERT_EQ(2u, columnBody.size());
++   ASSERT_EQ(j, to<Forall>(columnBody[0]).getIndexVar());
++   ASSERT_EQ(i, to<Forall>(columnBody[1]).getIndexVar());
++
+    A.compile(stmt);
+    A.assemble();
+    A.compute();

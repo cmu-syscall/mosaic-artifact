@@ -1,0 +1,7 @@
+list,position,matrix,backend,rows,columns,nnz,inner,median_us,error
+mosaic-paper,1,lp_nug08,sampled_gsl,912,1632,7296,100,438.14299988298444,
+mosaic-paper,2,m3plates,sampled_gsl,11107,11107,6639,100,422.0384994368942,
+mosaic-paper,3,IG5-12,sampled_gsl,2296,2875,46260,100,2651.862499988056,
+mosaic-paper,4,g7jac020sc,sampled_gsl,5850,5850,42568,100,2493.046500148921,
+mosaic-paper,5,gemat1,sampled_gsl,4929,10595,46591,100,2677.5910000651493,
+mosaic-paper,6,mimo28x28_system,sampled_gsl,13251,13251,48737,100,2872.003999982553,

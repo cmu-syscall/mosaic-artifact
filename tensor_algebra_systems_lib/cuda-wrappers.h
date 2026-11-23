@@ -95,4 +95,117 @@ static inline void cuda_spmv(const taco_tensor_t *matrix, const float *input,
 
 #undef MOSAIC_CUDA_CHECK
 #undef MOSAIC_CUSPARSE_CHECK
+
+#ifdef __cplusplus
+#include <stdexcept>
+
+namespace mosaic_cuda {
+namespace detail {
+
+inline void check(cudaError_t status) {
+  if (status != cudaSuccess) {
+    throw std::runtime_error(cudaGetErrorString(status));
+  }
+}
+
+inline void check(cusparseStatus_t status) {
+  if (status != CUSPARSE_STATUS_SUCCESS) {
+    throw std::runtime_error(cusparseGetErrorString(status));
+  }
+}
+
+struct DeviceBuffer {
+  DeviceBuffer() = default;
+  DeviceBuffer(const DeviceBuffer&) = delete;
+  DeviceBuffer& operator=(const DeviceBuffer&) = delete;
+
+  void* data = nullptr;
+  ~DeviceBuffer() {
+    if (data) cudaFree(data);
+  }
+
+  void allocate(size_t bytes) {
+    if (bytes != 0) {
+      check(cudaMalloc(&data, bytes));
+    }
+  }
+
+  void upload(const void* host, size_t bytes) {
+    allocate(bytes);
+    check(cudaMemcpy(data, host, bytes, cudaMemcpyHostToDevice));
+  }
+};
+
+} // namespace detail
+
+// Prepared FP32 SDDMM for a nonempty, zero-based CSR pattern, with row-major left and
+// column-major right operands. Download returns values in CSR storage order.
+class Sddmm {
+public:
+  Sddmm(const taco_tensor_t& pattern, int inner, const float* left,
+        const float* right) : Sddmm() {
+    const int rows = pattern.dimensions[0];
+    const int cols = pattern.dimensions[1];
+    const auto* offsets = reinterpret_cast<const int32_t*>(pattern.indices[1][0]);
+    const int nnz = offsets[rows];
+    resultBytes = size_t(nnz) * sizeof(float);
+
+    deviceOffsets.upload(offsets, (size_t(rows) + 1) * sizeof(*offsets));
+    deviceColumns.upload(pattern.indices[1][1], size_t(nnz) * sizeof(int32_t));
+    leftValues.upload(left, size_t(rows) * inner * sizeof(float));
+    rightValues.upload(right, size_t(cols) * inner * sizeof(float));
+    resultValues.allocate(resultBytes);
+    detail::check(cudaMemset(resultValues.data, 0, resultBytes));
+
+    detail::check(cusparseCreate(&handle));
+    detail::check(cusparseCreateDnMat(&leftMatrix, rows, inner, inner, leftValues.data,
+                                       CUDA_R_32F, CUSPARSE_ORDER_ROW));
+    detail::check(cusparseCreateDnMat(&rightMatrix, inner, cols, inner, rightValues.data,
+                                       CUDA_R_32F, CUSPARSE_ORDER_COL));
+    detail::check(cusparseCreateCsr(&resultMatrix, rows, cols, nnz, deviceOffsets.data,
+        deviceColumns.data, resultValues.data, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I,
+        CUSPARSE_INDEX_BASE_ZERO, CUDA_R_32F));
+
+    size_t bytes = 0;
+    detail::check(cusparseSDDMM_bufferSize(handle, op, op, &alpha, leftMatrix, rightMatrix,
+        &beta, resultMatrix, CUDA_R_32F, alg, &bytes));
+    workspace.allocate(bytes);
+    detail::check(cusparseSDDMM_preprocess(handle, op, op, &alpha, leftMatrix, rightMatrix,
+        &beta, resultMatrix, CUDA_R_32F, alg, workspace.data));
+    detail::check(cudaDeviceSynchronize());
+  }
+
+  ~Sddmm() {
+    if (resultMatrix) cusparseDestroySpMat(resultMatrix);
+    if (rightMatrix) cusparseDestroyDnMat(rightMatrix);
+    if (leftMatrix) cusparseDestroyDnMat(leftMatrix);
+    if (handle) cusparseDestroy(handle);
+  }
+
+  void run() {
+    detail::check(cusparseSDDMM(handle, op, op, &alpha, leftMatrix, rightMatrix,
+        &beta, resultMatrix, CUDA_R_32F, alg, workspace.data));
+    detail::check(cudaDeviceSynchronize());
+  }
+
+  void download(float* output) const {
+    detail::check(cudaMemcpy(output, resultValues.data, resultBytes, cudaMemcpyDeviceToHost));
+  }
+
+private:
+  Sddmm() = default;
+
+  const cusparseOperation_t op = CUSPARSE_OPERATION_NON_TRANSPOSE;
+  const cusparseSDDMMAlg_t alg = CUSPARSE_SDDMM_ALG_DEFAULT;
+  const float alpha = 1.0f, beta = 0.0f;
+  size_t resultBytes = 0;
+  cusparseHandle_t handle = nullptr;
+  cusparseDnMatDescr_t leftMatrix = nullptr, rightMatrix = nullptr;
+  cusparseSpMatDescr_t resultMatrix = nullptr;
+  detail::DeviceBuffer deviceOffsets, deviceColumns, leftValues, rightValues, resultValues, workspace;
+};
+
+} // namespace mosaic_cuda
+#endif
+
 #endif

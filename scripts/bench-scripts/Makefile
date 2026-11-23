@@ -32,9 +32,34 @@ run-fig15:
 run-fig16:
 	./sddmm_varSparsity/bench.sh
 
-.PHONY: run-sddmm-varsparsity-cusparse
+.PHONY: run-sddmm-varsparsity-cusparse run-sddmm-varsparsity-cuda
+.PHONY: run-sddmm-varsparsity-cpu-blocked run-sddmm-varsparsity-cuda-row-tiled
+run-sddmm-varsparsity-cpu-blocked:
+	./sddmm_varSparsity/bench.sh cpu_blocked
+
+run-sddmm-varsparsity-cuda-row-tiled:
+	bash ./sddmm_varSparsity/bench-cusparse.sh cuda_row_tiled
+
 run-sddmm-varsparsity-cusparse:
 	bash ./sddmm_varSparsity/bench-cusparse.sh
+
+run-sddmm-varsparsity-cuda:
+	bash ./sddmm_varSparsity/bench-cusparse.sh cuda_optimized
+
+.PHONY: run-sddmm-suitesparse run-sddmm-mosaic-paper run-sddmm-mosaic-paper-with-gsl
+SUITESPARSE_GSL_RESULTS ?= ./sddmm_suitesparse/result
+
+run-sddmm-suitesparse:
+	python3 ./sddmm_suitesparse/bench.py $(SUITESPARSE_ARGS)
+
+run-sddmm-mosaic-paper:
+	python3 ./sddmm_suitesparse/bench.py --list ./sddmm_suitesparse/mosaic-paper.txt $(SUITESPARSE_ARGS)
+
+run-sddmm-mosaic-paper-with-gsl:
+	python3 ./sddmm_suitesparse/bench.py --list ./sddmm_suitesparse/mosaic-paper.txt \
+		--require-all-backends $(SUITESPARSE_ARGS) --output "$(SUITESPARSE_GSL_RESULTS)/mosaic-paper-with-gsl.csv"
+	python3 ./sddmm_suitesparse/plot_bars.py "$(SUITESPARSE_GSL_RESULTS)/mosaic-paper-with-gsl.csv" \
+		--output "$(SUITESPARSE_GSL_RESULTS)/Mosaic Paper SDDMM All Backends with GSL.pdf"
 
 run-fig17:
 	./blockedSparse_4T_5/bench.sh
@@ -74,12 +99,15 @@ draw-fig15:
 	--name=fig15 --start_dim=250 --step_dim=250 --unit=ms
 	cp ./spmv/result/fig15.pdf figs/
 
+comma := ,
+fig16_optional_systems = $(if $(wildcard sddmm_varSparsity/result/sampled_gsl),$(comma)sampled_gsl)$(if $(wildcard sddmm_varSparsity/result/taco_scheduled),$(comma)taco_scheduled)$(if $(wildcard sddmm_varSparsity/result/optimized),$(comma)optimized)$(if $(wildcard sddmm_varSparsity/result/cusparse),$(comma)cusparse)$(if $(wildcard sddmm_varSparsity/result/cuda_optimized),$(comma)cuda_optimized)$(if $(wildcard sddmm_varSparsity/result/cpu_blocked),$(comma)cpu_blocked)$(if $(wildcard sddmm_varSparsity/result/cuda_row_tiled),$(comma)cuda_row_tiled)
+
 draw-fig16:
 	python3 $(PATH_TO_MOSAIC_ARTIFACT)/mosaic-benchmarks/run-figure.py \
 	--data_dir=$(PATH_TO_MOSAIC_ARTIFACT)/scripts/bench-scripts/sddmm_varSparsity/result \
-	--type=vary_sparse --systems=blas,taco,dot_mkl,gemv_gsl,gemv_mkl,mkl,tblis \
+	--type=vary_sparse --systems=blas,taco,dot_mkl,gemv_gsl,gemv_mkl,mkl,tblis$(fig16_optional_systems) \
 	--name=fig16 --sparsity=0.00078125,0.0015625,0.003125,0.00625,0.0125,0.025,0.05,0.1 --unit=us
-	cp ./sddmm_varSparsity/result/fig16.pdf figs/
+	cp "./sddmm_varSparsity/result/SDDMM Performance.pdf" figs/
 
 draw-fig17:
 	python3 $(PATH_TO_MOSAIC_ARTIFACT)/mosaic-benchmarks/run-figure.py \
